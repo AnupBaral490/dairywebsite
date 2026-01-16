@@ -1,0 +1,42 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}Contact Us{% endblock title %}
+
+{% block main-content %}
+
+<section class="contact-section" style="background: url('https://png.pngtree.com/thumb_back/fh260/background/20250307/pngtree-rustic-farm-stall-fresh-dairy-products-milk-cheese-image_17078739.jpg') no-repeat center/cover; background-size: cover; min-height: 100vh;">
+    <div class="contact-overlay" style="background: rgba(0, 0, 0, 0.6); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+        <div class="contact-container" style="display: grid; grid-template-columns: 1fr 1fr; max-width: 1000px; width: 90%; background: #ffffff; border-radius: 15px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+
+            <div class="contact-info" style="background: #2c6e49; color: white; padding: 40px;">
+                <h2>Contact Us</h2>
+                <p>
+                    Have questions about our dairy products?  
+                    Feel free to contact us — we’re happy to help 🥛
+                </p>
+
+                <ul style="list-style: none; padding: 0;">
+                    <li><strong>📍 Address:</strong> Fresh Dairy, Nepal</li>
+                    <li><strong>📞 Phone:</strong> +977 9846880980</li>
+                    <li><strong>📧 Email:</strong> baralanup832@gmail.com</li>
+                </ul>
+            </div>
+
+            <div class="contact-form" style="padding: 40px;">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
+                    <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
+                    <input type="text" name="phone" placeholder="Phone Number" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
+                    <textarea name="message" rows="4" placeholder="Your Message" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;"></textarea>
+
+                    <button type="submit" style="width:100%; padding:12px; background:#2c6e49; color:white; border:none; border-radius:6px; font-size:15px; cursor:pointer;">Send Message</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock main-content %}
