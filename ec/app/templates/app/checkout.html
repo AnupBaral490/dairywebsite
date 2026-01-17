@@ -66,38 +66,41 @@
 {% endblock main-content %}
 
 {% block payment-gateway %}
-<script>
-    var options = {
-         "key": "rzp_test_LxRqAytA5m1RfA", // Enter the Key ID generated from the Dashboard 
-        "amount": "{{razorpay_amount}}", // Amount is in currency subunits. Default is INR. Hence, 50000 refers to 50000 paise 
-        "currency": "INR",
-        "name": "Mavericks",
-        "description": "Purchase Product",
-        "order_id": "{{order_id}}", // This is a sample Order ID. Pass the id obtained in the response of Step 1 
-        "handler": function (response){
-            console.log("success") var form = document.getElementById("myform"); 
-            //alert(form.elements["custid"].value); 
-            //alert(response.razorpay_payment_id);
-            //alert(response.razorpay_order_id); 
-            //alert(response.razorpay_signature);
-            window.location.href = `http://localhost:8000/paymentdone?order_id=${response.razorpay_order_id}&payment_id=${response.razorpay_payment_id}&cust_id=${form.elements["custid"].value}`
-          
-        },
-        "theme": { 
-            "color": "#3399cc" 
-        } 
-    };
-    
-    var rzp1 = new Razorpay(options);
-    razp1.on('payment.failed',function(response){
-        alert(response.error.description);
-    });
-    document.getElementById('rzp-button1').onclick = function(e){
-        console.log("button click");
-        rzp1.open();
-        e.preventDefault();
-    }
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "rzp_test_LxRqAytA5m1RfA",
+    "amount": {{ razorpay_amount|default:0 }},  // numeric in paise
+    "currency": "INR",
+    "name": "Mavericks",
+    "description": "Purchase Product",
+    "order_id": "{{ order_id|default:'' }}",
+    "handler": function (response) {
+        console.log("Payment Success", response);
+        var form = document.getElementById("myform");
+        window.location.href = "/paymentdone?order_id=" 
+                                + response.razorpay_order_id 
+                                + "&payment_id=" + response.razorpay_payment_id
+                                + "&cust_id=" + form.elements["custid"].value;
+    },
+    "theme": { "color": "#3399cc" }  // ✅ no trailing comma
+};
+
+var rzp1 = new Razorpay(options);
+
+rzp1.on('payment.failed', function(response){
+    alert(response.error.description);
+});
+
+document.getElementById('rzp-button1').onclick = function(e){
+    console.log("button click");
+    rzp1.open();
+    e.preventDefault();
+};
 </script>
+
+
+
 
 {% endblock payment-gateway %}

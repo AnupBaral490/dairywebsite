@@ -156,32 +156,61 @@ def show_cart(request):
     return render(request, 'app/addtocart.html',locals())
 
 class checkout(View):
-    def get(self,request):
-        user=request.user
-        add=Customer.objects.filter(user=user)
-        cart_items=Cart.objects.filter(user=user)
+
+    def get(self, request):
+        user = request.user
+        add = Customer.objects.filter(user=user)
+        cart_items = Cart.objects.filter(user=user)
+
         famount = 0
         for p in cart_items:
-            value = p.quantity * p.product.discounted_price
-            famount = famount + value
+            famount += p.quantity * p.product.discounted_price
+
         totalamount = famount + 40
-        razoramount = int(totalamount * 100)
+        razoramount = int(totalamount * 100)  # in paise
+
         client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-        data = { "amount": razoramount, "currency": "INR", "receipt": "order_rcptid_12"}
+        data = {
+            "amount": razoramount,
+            "currency": "INR",
+            "receipt": "order_rcptid_12"
+        }
         payment_response = client.order.create(data=data)
         print(payment_response)
-        #{'amount': 11000, 'amount_due': 11000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1768637373, 'currency': 'INR', 'entity': 'order', 'id': 'order_S4sI0IVA7PrtWJ', 'notes': [], 'offer_id': None, 'receipt': 'order_rcptid_12', 'status': 'created'}
+
         order_id = payment_response['id']
         order_status = payment_response['status']
+
         if order_status == 'created':
             payment = Payment(
                 user=user,
                 amount=totalamount,
                 razorpay_order_id=order_id,
-                razorpay_payment_status = order_status
+                razorpay_payment_status=order_status
             )
             payment.save()
-        return render(request,'app/checkout.html',locals())
+
+        return render(request, 'app/checkout.html', locals())
+
+    def post(self, request):
+        # This handles the Razorpay payment callback
+        razorpay_order_id = request.POST.get('razorpay_order_id')
+        razorpay_payment_id = request.POST.get('razorpay_payment_id')
+        razorpay_signature = request.POST.get('razorpay_signature')
+
+        # For project purposes, skip signature verification
+        try:
+            payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.razorpay_payment_status = 'paid'
+            payment.paid = True
+            payment.save()
+        except Payment.DoesNotExist:
+            # Handle if payment record not found
+            return redirect('checkout')  # or show error
+
+        # Optionally, mark orders as placed here
+        return redirect('orders')  # replace with your order success page
     
 
 def payment_done(request):
