@@ -140,3 +140,6 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+RAZOR_KEY_ID = "rzp_test_LxRqAytA5m1RfA"
+RAZOR_KEY_SECRET = "5IXsKXQ4NR89wHUZNs3GNVur"
