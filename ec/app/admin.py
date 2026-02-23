@@ -3,7 +3,7 @@ from . models import Product
 from .models import ContactMessage
 from .models import Customer
 from .models import Cart
-from . models import Payment, OrderPlaced
+from . models import Payment, OrderPlaced, Wishlist
 # Register your models here.
 
 @admin.register(Product)
@@ -34,3 +34,7 @@ class PaymentModelAdmin(admin.ModelAdmin):
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(admin.ModelAdmin):
     list_display=['id','user','customer','product','quantity','ordered_date','status','payment']
+
+@admin.register(Wishlist)
+class WishlistModelAdmin(admin.ModelAdmin):
+    list_display = ['id','user','product']

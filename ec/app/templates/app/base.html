@@ -13,151 +13,9 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <title>Dairy Products | {% block title %}{% endblock title %}</title>
-    <style>
-.goodnessseccount img {
-    width: 100%;
-}
-
-.buttermilk {
-    background-color: #fff;
-    background-image: linear-gradient(#fff7ef, #fff);
-    background-image: -webkit-linear-gradient(#fff7ef, #fff);
-    background-image: -moz-linear-gradient(#fff7ef, #fff);
-    background-image: -ms-linear-gradient(#fff7ef, #fff);
-    background-image: -o-linear-gradient(#fff7ef, #fff);
-    padding: 50px 40px;
-    border: 1px solid #efe8e1;
-    padding-bottom: 20px;
-}
-
-.smbg {
-    background-color: #fff;
-    background-image: linear-gradient(rgba(110, 69, 143, 0.1), #fff);
-    background-image: -webkit-linear-gradient(rgba(110, 69, 143, 0.1), #fff);
-    background-image: -moz-linear-gradient(rgba(110, 69, 143, 0.1), #fff);
-    background-image: -ms-linear-gradient(rgba(110, 69, 143, 0.1), #fff);
-    background-image: -o-linear-gradient(rgba(110, 69, 143, 0.1), #fff);
-}
-
-.curdbgpro {
-    background-color: #fff;
-    background-image: linear-gradient(rgba(10, 77, 123, 0.1), #fff);
-    background-image: -webkit-linear-gradient(rgba(10, 77, 123, 0.1), #fff);
-    background-image: -moz-linear-gradient(rgba(10, 77, 123, 0.1), #fff);
-    background-image: -ms-linear-gradient(rgba(10, 77, 123, 0.1), #fff);
-    background-image: -o-linear-gradient(rgba(10, 77, 123, 0.1), #fff);
-}
-
-    .mlkpro{
-    color:#636362;
-    font-size:22px;
-    line-height:22px;
-    margin-bottom:15px;
-    width:43%;
-    margin:0 auto;
-    text-align:center;
-}
-
-.goodnesssec a{
-    text-decoration: none;
-}
-   .goodnessseccount img {
-        width: 200px;
-        height: 200px;
-        object-fit: contain; /* prevents image distortion */
-    }
-     .row {
-        row-gap: 30px; /* space between rows (columns groups) */
-    }
-
-
-
-.contact-overlay {
-    background: rgba(0, 0, 0, 0.6);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    max-width: 1000px;
-    width: 90%;
-    background: #ffffff;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-/* Left Info */
-.contact-info {
-    background: #2c6e49;
-    color: white;
-    padding: 40px;
-}
-
-.contact-info h2 {
-    margin-bottom: 15px;
-}
-
-.contact-info p {
-    font-size: 14px;
-    margin-bottom: 20px;
-}
-
-.contact-info ul {
-    list-style: none;
-    padding: 0;
-}
-
-.contact-info li {
-    margin-bottom: 12px;
-}
-
-/* Right Form */
-.contact-form {
-    padding: 40px;
-}
-
-.contact-form input,
-.contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.contact-form button {
-    width: 100%;
-    padding: 12px;
-    background: #2c6e49;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.contact-form button:hover {
-    background: #1f5136;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .contact-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-</style>
 </head>
-<body>
- <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+<body class="site-body">
+ <nav class="navbar navbar-expand-lg navbar-dark site-navbar">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">
       <img src="{% static "app/images/product/Neel.png" %}" width="70" height="50" />
@@ -208,7 +66,7 @@
         aria-expanded="false">Anup</a>
         <ul class="dropdown-menu" aria-labelledby="profileDropdown">
           <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-          <li><a class="dropdown-item" href="#">Orders</a></li>
+          <li><a class="dropdown-item" href="{% url 'orders' %}">Orders</a></li>
           <li><a class="dropdown-item" href="{% url 'passwordchange' %}">Change Password</a></li>
           <li>
           <form method="post" action="{% url 'logout' %}">
@@ -220,8 +78,14 @@
         </ul>
       </li>
       <li class="nav-item mx-2">
-        <a href="{% url 'showcart' %}" class="nav-link text-white">Cart </a>
-      </li>
+    <a href="{% url 'showcart' %}" class="nav-link text-white">
+        {% if totalitem > 0 %}
+            <span class="badge bg-danger">{{ totalitem }}</span>
+        {% endif %}
+        Cart
+    </a>
+</li>
+
       <li class="nav-item mx-2">
         <a href="#" class="nav-link text-white">Whistle </a>
       </li>
@@ -243,8 +107,8 @@
 {% block main-content %}{% endblock main-content %}
 {% block payment-gateway %}{% endblock payment-gateway %}
 
-<footer class="container-fluid fixed-bottom bg-success text-center p-2 mt-5">
-Copyright: 2025 || Develop By Anup Baral
+<footer class="container-fluid site-footer text-center">
+  <small>Copyright: 2025 || Develop By Anup Baral</small>
 </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

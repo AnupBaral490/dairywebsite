@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from . models import Product, Cart, OrderPlaced
+from . models import Product, Cart, OrderPlaced, Wishlist
 from django.db.models import Count
 from django.contrib import messages
 from .models import ContactMessage
@@ -10,17 +10,21 @@ from django.db.models import Q
 import razorpay
 from django.conf import settings
 from .models import Payment
-
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def home(request):
     return render(request,"app/home.html")
 
 def about(request):
-    return render(request,"app/about.html")
+    return render(request, "app/about.html")
+
 
 def contact(request):
-    return render(request,"app/contact.html")
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    return render(request,"app/contact.html",locals())
 
 
 class CategoryView(View):
@@ -47,9 +51,20 @@ class CategoryTitle(View):
     
 
 class ProductDetail(View):
-    def get(self,request,pk):
-        product = Product.objects.get(pk=pk)
-        return render(request,"app/productdetail.html",locals())
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+
+        wishlist = None
+        if request.user.is_authenticated:
+            wishlist = Wishlist.objects.filter(
+                product=product,
+                user=request.user
+            ).exists()
+
+        return render(request, "app/productdetail.html", {
+            'product': product,
+            'wishlist': wishlist,
+        })
     
 
 def contact(request):
@@ -213,25 +228,48 @@ class checkout(View):
         return redirect('orders')  # replace with your order success page
     
 
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+
 def payment_done(request):
-    order_id=request.GET.get('order_id')
-    payment_id=request.GET.get('payment_id')
-    cust_id=request.GET.get('cust_id')
-    #print("payment_done : oid = ",order_id," pid = ",payment_id," cid = ",cust-id)
-    user=request.user
-    #return redirect("orders")
-    customer=Customer.objects.get(id=cust_id)
-    #To update payment status and payment id
-    payment=Payment.objects.get(razorpay_order_id=order_id)
+    order_id = request.GET.get('order_id')
+    payment_id = request.GET.get('payment_id')
+    cust_id = request.GET.get('cust_id')
+
+    # 🔒 Safety check
+    if not cust_id:
+        messages.error(request, "Please select a shipping address")
+        return redirect('checkout')
+
+    user = request.user
+
+    # Get customer & payment safely
+    customer = get_object_or_404(Customer, id=cust_id)
+    payment = get_object_or_404(Payment, razorpay_order_id=order_id)
+
+    # Update payment info
     payment.paid = True
     payment.razorpay_payment_id = payment_id
     payment.save()
-    #To save order details
-    cart=Cart.objects.filter(user=user)
-    for c in cart:
-        OrderPlaced(user=user,customer=customer,product=c.product,quantity=c.quantity,payment=payment).save()
-        c.delete()
+
+    # Create orders from cart
+    cart_items = Cart.objects.filter(user=user)
+    for item in cart_items:
+        OrderPlaced.objects.create(
+            user=user,
+            customer=customer,
+            product=item.product,
+            quantity=item.quantity,
+            payment=payment
+        )
+        item.delete()
+
     return redirect("orders")
+
+
+def orders(request):
+    order_placed=OrderPlaced.objects.filter(user=request.user)
+    return render(request, 'app/orders.html',locals())
 
 def plus_cart(request):
     if request.method == 'GET':

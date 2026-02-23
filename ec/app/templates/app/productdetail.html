@@ -3,38 +3,44 @@
 {% block title %}Category{% endblock title %}
 
 {% block main-content %}
+<section class="section">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-6">
+                <div class="product-image-frame">
+                    <img src="{{ product.product_image.url }}" alt="">
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="product-detail">
+                    <h1>{{ product.title }}</h1>
+                    <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
+                        <span class="product-price">Rs.{{ product.discounted_price }}/-</span>
+                        <span class="product-meta text-decoration-line-through">Rs. {{ product.selling_price }}/-</span>
+                    </div>
 
-<div class="container">
-    <div class="row flex justify-content-between">
-        <div class="img2 col-lg-5 mt-5">
-            <img src="{{ product.product_image.url }}" class="image col-xs-6
-            col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="">
+                    <h4 class="mb-3">Product Features</h4>
+                    <ul class="fs-6">
+                        <li>{{ product.description }}</li>
+                    </ul>
+
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        <form action="{% url 'add_to_cart' %}" method="get" class="d-inline">
+                            <input type="hidden" name="prod_id" value="{{ product.id }}">
+                            <button type="submit" class="btn btn-brand px-4 py-2">Add to Cart</button>
+                        </form>
+
+                        <a href="{% url "showcart" %}" class="btn btn-accent px-4 py-2">Buy Now</a>
+
+                        {% if wishlist %}
+                        <a pid={{ product.id }} class="minus-wishlist btn btn-danger px-4 py-2"><i class="fas fa-heart fa-lg"></i></a>
+                        {% else %}
+                        <a pid={{ product.id }} class="plus-wishlist btn btn-success px-4 py-2"><i class="fas fa-heart fa-lg"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="productdetail col-lg-5">
-            <h1 style="font-family: Georgia; font-size: 50px;">{{ product.title }}</h1>
-            <h5>Rs.{{ product.discounted_price }}/-</h5>
-            <small class="text-decoration-line-through text-muted fs-5"><del>Rs. {{ product.selling_price }}/- </small></del>
-            <br><br><h4>Product Features</h4>
-            <ul class="fs-5" style="font-family: Rajdhani;">
-                <li>{{ product.description }}</li>
-            </ul>
-
-            <form action="{% url 'add_to_cart' %}" method="get" class="d-inline">
-                <input type="hidden" name="prod_id" value="{{ product.id }}">
-                <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
-            </form>
-
-            <div class="btn btn-dark p-1 m-1 btn-lg"><a href="{% url "showcart" %}"class="text-decoration-none text-white">Buy Now</a></div>
-            <br><br>
-
-            
-        </div>
-
     </div>
-
-
-</div>
-
-
-
+</section>
 {% endblock main-content %}
