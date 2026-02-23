@@ -190,6 +190,28 @@ a {
 	object-fit: contain;
 }
 
+.product-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: flex-start;
+}
+
+.product-actions-form {
+	flex: 1 1 220px;
+	min-width: 220px;
+}
+
+.product-actions > .btn {
+	flex: 1 1 160px;
+	min-width: 160px;
+}
+
+.product-actions .icon-only {
+	flex: 0 0 auto;
+	min-width: 54px;
+}
+
 .site-footer {
 	background: linear-gradient(120deg, var(--brand-900), #103b34);
 	color: rgba(255, 255, 255, 0.9);
@@ -310,6 +332,16 @@ a {
 	.product-detail,
 	.product-image-frame {
 		margin-bottom: 24px;
+	}
+
+	.product-actions {
+		flex-direction: column;
+	}
+
+	.product-actions > .btn,
+	.product-actions-form {
+		width: 100%;
+		min-width: 100%;
 	}
 }
 

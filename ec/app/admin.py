@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Product, ProductVariant, ProductReview
+from . models import Product, ProductVariant, ProductReview, Farmer, FarmerMessage
 from .models import ContactMessage
 from .models import Customer
 from .models import Cart
@@ -8,7 +8,8 @@ from . models import Payment, OrderPlaced, Wishlist
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
-    list_display = ['id','title','discounted_price','category','product_image']
+    list_display = ['id','title','discounted_price','category','farmer','product_image']
+    list_display_links = ['id', 'title']
 
 
 @admin.register(ProductVariant)
@@ -52,3 +53,16 @@ class ProductReviewModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'user', 'rating', 'created_at']
     list_filter = ['rating', 'created_at']
     search_fields = ['product__title', 'user__username']
+
+
+@admin.register(Farmer)
+class FarmerModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'farm_name', 'name', 'location', 'phone', 'email']
+    search_fields = ['farm_name', 'name', 'location']
+
+
+@admin.register(FarmerMessage)
+class FarmerMessageModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'farmer', 'user', 'product', 'subject', 'created_at']
+    list_filter = ['created_at']
+    search_fields = ['farmer__farm_name', 'user__username', 'subject']

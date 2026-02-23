@@ -1,0 +1,79 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}Farmer{% endblock title %}
+
+{% block main-content %}
+<section class="section">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-lg-5">
+                <div class="card-soft">
+                    <h2 class="section-title">{{ farmer.farm_name }}</h2>
+                    <div class="fw-semibold">{{ farmer.name }}</div>
+                    <div class="text-muted">{{ farmer.location }}</div>
+                    {% if farmer.bio %}
+                    <p class="mt-3">{{ farmer.bio }}</p>
+                    {% endif %}
+                    {% if farmer.phone %}
+                    <p class="mt-3">Phone: {{ farmer.phone }}</p>
+                    {% endif %}
+                    {% if farmer.email %}
+                    <p>Email: {{ farmer.email }}</p>
+                    {% endif %}
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        {% if farmer.phone %}
+                        <a class="btn btn-outline-success" href="tel:{{ farmer.phone }}">Call Farmer</a>
+                        <a class="btn btn-outline-success" href="https://wa.me/{{ farmer.phone|cut:' ' }}" target="_blank" rel="noopener">WhatsApp</a>
+                        {% endif %}
+                        {% if farmer.email %}
+                        <a class="btn btn-outline-primary" href="mailto:{{ farmer.email }}">Email Farmer</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-7">
+                <div class="card-soft">
+                    <h3 class="mb-3">Contact the Farmer</h3>
+                    {% if request.user.is_authenticated %}
+                    <form method="post" action="{% url 'contact-farmer' farmer.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ farmer_form.subject }}
+                        </div>
+                        <div class="mb-3">
+                            {{ farmer_form.message }}
+                        </div>
+                        <button class="btn btn-brand" type="submit">Send Message</button>
+                    </form>
+                    {% else %}
+                    <p class="text-muted">Please log in to contact the farmer.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-light">
+    <div class="container">
+        <h3 class="mb-4">Products from {{ farmer.farm_name }}</h3>
+        {% if products %}
+        <div class="row g-4">
+            {% for prod in products %}
+            <div class="col-12 col-sm-6 col-lg-3">
+                <a href="{% url 'product-detail' prod.id %}" class="text-decoration-none">
+                    <div class="card-soft text-center h-100">
+                        <img src="{{ prod.product_image.url }}" class="img-fluid" alt="{{ prod.title }}">
+                        <div class="fw-semibold mt-3">{{ prod.title }}</div>
+                        <div class="text-danger fw-semibold">Rs.{{ prod.effective_discounted_price }}/-</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">No products available yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock main-content %}

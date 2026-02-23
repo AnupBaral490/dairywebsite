@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField, PasswordChangeForm, SetPasswordForm, PasswordResetForm
 from django.contrib.auth.models import User
 
-from .models import Customer, ProductReview
+from .models import Customer, ProductReview, FarmerMessage
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(
@@ -86,4 +86,14 @@ class ProductReviewForm(forms.ModelForm):
             'rating': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 5}),
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Short title (optional)'}),
             'body': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Share your experience'}),
+        }
+
+
+class FarmerMessageForm(forms.ModelForm):
+    class Meta:
+        model = FarmerMessage
+        fields = ['subject', 'message']
+        widgets = {
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Subject'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Write your message'}),
         }

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from . models import Product, Cart, OrderPlaced, Wishlist, ProductVariant, ProductReview
+from . models import Product, Cart, OrderPlaced, Wishlist, ProductVariant, ProductReview, Farmer, FarmerMessage
 from django.db.models import Count, Avg
 from django.contrib import messages
 from .models import ContactMessage
-from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer, ProductReviewForm
+from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer, ProductReviewForm, FarmerMessageForm
 from django.http import JsonResponse
 from django.db.models import Q
 import razorpay
@@ -116,6 +116,7 @@ class ProductDetail(View):
             'review_count': review_count,
             'can_review': can_review,
             'review_form': ProductReviewForm(),
+            'farmer_form': FarmerMessageForm(),
             'recent_products': recent_products,
             'recommended_products': recommended_products,
         })
@@ -488,5 +489,39 @@ def add_review(request, pk):
         else:
             messages.warning(request, "Please correct the review form.")
     return redirect('product-detail', pk=pk)
+
+
+def farmer_detail(request, pk):
+    farmer = get_object_or_404(Farmer, pk=pk)
+    products = farmer.products.all()
+    return render(request, 'app/farmer_detail.html', {
+        'farmer': farmer,
+        'products': products,
+        'farmer_form': FarmerMessageForm(),
+    })
+
+
+def contact_farmer(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    farmer = get_object_or_404(Farmer, pk=pk)
+    product_id = request.POST.get('product_id')
+    product = None
+    if product_id:
+        product = Product.objects.filter(id=product_id, farmer=farmer).first()
+
+    if request.method == 'POST':
+        form = FarmerMessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.farmer = farmer
+            message.user = request.user
+            message.product = product
+            message.save()
+            messages.success(request, "Your message was sent to the farmer.")
+        else:
+            messages.warning(request, "Please correct the form and try again.")
+    return redirect('farmer-detail', pk=pk)
     
 

@@ -35,6 +35,7 @@ class Product(models.Model):
     prodapp = models.TextField(default='')
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
     product_image = models.ImageField(upload_to='product')
+    farmer = models.ForeignKey('Farmer', on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     def __str__(self):
         return self.title
 
@@ -159,3 +160,31 @@ class ProductReview(models.Model):
 
     def __str__(self):
         return f"{self.product.title} - {self.user.username} ({self.rating})"
+
+
+class Farmer(models.Model):
+    name = models.CharField(max_length=120)
+    farm_name = models.CharField(max_length=160)
+    location = models.CharField(max_length=160)
+    bio = models.TextField(blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    email = models.EmailField(blank=True)
+    photo = models.ImageField(upload_to='farmers', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.farm_name} - {self.name}"
+
+
+class FarmerMessage(models.Model):
+    farmer = models.ForeignKey(Farmer, on_delete=models.CASCADE, related_name='messages')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    subject = models.CharField(max_length=120)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.farmer.farm_name} - {self.user.username}"
