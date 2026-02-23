@@ -212,6 +212,12 @@ a {
 	min-width: 54px;
 }
 
+.variant-chips {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+	gap: 8px;
+}
+
 .site-footer {
 	background: linear-gradient(120deg, var(--brand-900), #103b34);
 	color: rgba(255, 255, 255, 0.9);
@@ -318,6 +324,25 @@ a {
 	.section {
 		padding: 56px 0;
 	}
+
+	.product-actions {
+		gap: 12px;
+	}
+
+	.product-actions > .btn,
+	.product-actions-form {
+		flex: 1 1 calc(50% - 12px);
+		min-width: calc(50% - 12px);
+	}
+
+	.product-actions .icon-only {
+		flex: 0 0 auto;
+		min-width: 54px;
+	}
+
+	.variant-chips {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
 }
 
 @media (max-width: 768px) {
@@ -342,6 +367,10 @@ a {
 	.product-actions-form {
 		width: 100%;
 		min-width: 100%;
+	}
+
+	.variant-chips {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 

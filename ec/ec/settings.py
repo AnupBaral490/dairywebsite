@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -140,7 +141,13 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
                #redirecting to the profile 
 
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("baralanup832@gmail.com", "")
+EMAIL_HOST_PASSWORD = os.environ.get("kxlc mxef mjil phwm", "")
+DEFAULT_FROM_EMAIL = "baralanup832@gmail.com"
 
 RAZOR_KEY_ID = "rzp_test_LxRqAytA5m1RfA"
 RAZOR_KEY_SECRET = "5IXsKXQ4NR89wHUZNs3GNVur"

@@ -59,6 +59,7 @@ class ProductReviewModelAdmin(admin.ModelAdmin):
 class FarmerModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'farm_name', 'name', 'location', 'phone', 'email']
     search_fields = ['farm_name', 'name', 'location']
+    list_display_links = ['id', 'farm_name']
 
 
 @admin.register(FarmerMessage)

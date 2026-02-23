@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 import razorpay
 from django.conf import settings
+from django.core.mail import send_mail
 from .models import Payment
 from django.shortcuts import get_object_or_404
 
@@ -519,7 +520,48 @@ def contact_farmer(request, pk):
             message.user = request.user
             message.product = product
             message.save()
-            messages.success(request, "Your message was sent to the farmer.")
+            if farmer.email:
+                subject = message.subject or f"New message about {product.title if product else 'your products'}"
+                body_lines = [
+                    f"From: {request.user.username}",
+                    f"Email: {request.user.email}",
+                ]
+                if product:
+                    body_lines.append(f"Product: {product.title}")
+                body_lines.append("")
+                body_lines.append(message.message)
+                send_mail(
+                    subject,
+                    "\n".join(body_lines),
+                    settings.DEFAULT_FROM_EMAIL,
+                    [farmer.email],
+                    fail_silently=False,
+                )
+                if request.user.email:
+                    user_subject = "We received your message"
+                    user_body_lines = [
+                        f"Hi {request.user.username},",
+                        "",
+                        "Thanks for contacting the farmer. Here is a copy of your message:",
+                        "",
+                        f"Subject: {subject}",
+                    ]
+                    if product:
+                        user_body_lines.append(f"Product: {product.title}")
+                    user_body_lines.append("")
+                    user_body_lines.append(message.message)
+                    user_body_lines.append("")
+                    user_body_lines.append("We will connect you with the farmer soon.")
+                    send_mail(
+                        user_subject,
+                        "\n".join(user_body_lines),
+                        settings.DEFAULT_FROM_EMAIL,
+                        [request.user.email],
+                        fail_silently=False,
+                    )
+                messages.success(request, "Your message was sent to the farmer.")
+            else:
+                messages.warning(request, "Message saved, but the farmer has no email on file.")
         else:
             messages.warning(request, "Please correct the form and try again.")
     return redirect('farmer-detail', pk=pk)
