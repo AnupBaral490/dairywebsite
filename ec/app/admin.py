@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Product
+from . models import Product, ProductVariant, ProductReview
 from .models import ContactMessage
 from .models import Customer
 from .models import Cart
@@ -9,6 +9,13 @@ from . models import Payment, OrderPlaced, Wishlist
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
     list_display = ['id','title','discounted_price','category','product_image']
+
+
+@admin.register(ProductVariant)
+class ProductVariantModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'product', 'pack_size_value', 'pack_size_unit', 'discounted_price', 'stock', 'is_default']
+    list_filter = ['pack_size_unit', 'is_default']
+    search_fields = ['product__title']
 
 
 @admin.register(ContactMessage)
@@ -33,8 +40,15 @@ class PaymentModelAdmin(admin.ModelAdmin):
 
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(admin.ModelAdmin):
-    list_display=['id','user','customer','product','quantity','ordered_date','status','payment']
+    list_display=['id','user','customer','product','variant','quantity','ordered_date','status','payment']
 
 @admin.register(Wishlist)
 class WishlistModelAdmin(admin.ModelAdmin):
     list_display = ['id','user','product']
+
+
+@admin.register(ProductReview)
+class ProductReviewModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'product', 'user', 'rating', 'created_at']
+    list_filter = ['rating', 'created_at']
+    search_fields = ['product__title', 'user__username']

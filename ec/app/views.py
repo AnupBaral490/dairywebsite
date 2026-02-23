@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from . models import Product, Cart, OrderPlaced, Wishlist
-from django.db.models import Count
+from . models import Product, Cart, OrderPlaced, Wishlist, ProductVariant, ProductReview
+from django.db.models import Count, Avg
 from django.contrib import messages
 from .models import ContactMessage
-from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer
+from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer, ProductReviewForm
 from django.http import JsonResponse
 from django.db.models import Q
 import razorpay
@@ -30,6 +30,19 @@ def contact(request):
 class CategoryView(View):
     def get(self,request,val):
         product = Product.objects.filter(category=val)
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+        if min_price:
+            try:
+                product = product.filter(discounted_price__gte=float(min_price))
+            except ValueError:
+                min_price = None
+        if max_price:
+            try:
+                product = product.filter(discounted_price__lte=float(max_price))
+            except ValueError:
+                max_price = None
+
         title = Product.objects.filter(category=val).values('title').annotate(total=Count('title'))
         return render(request,"app/category.html",locals())
     
@@ -37,6 +50,19 @@ class CategoryTitle(View):
     def get(self, request, val):  # ✅ indent everything inside the method
         # Get products matching the title
         product = Product.objects.filter(title=val)
+
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+        if min_price:
+            try:
+                product = product.filter(discounted_price__gte=float(min_price))
+            except ValueError:
+                min_price = None
+        if max_price:
+            try:
+                product = product.filter(discounted_price__lte=float(max_price))
+            except ValueError:
+                max_price = None
 
         # Check if product exists to avoid index error
         if product.exists():
@@ -54,6 +80,9 @@ class ProductDetail(View):
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
 
+        variants = list(product.variants.all().order_by('pack_size_value'))
+        selected_variant = product.default_variant() or (variants[0] if variants else None)
+
         wishlist = None
         if request.user.is_authenticated:
             wishlist = Wishlist.objects.filter(
@@ -61,9 +90,34 @@ class ProductDetail(View):
                 user=request.user
             ).exists()
 
+        reviews = product.reviews.select_related('user')
+        avg_rating = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+        review_count = reviews.count()
+        can_review = request.user.is_authenticated and not reviews.filter(user=request.user).exists()
+
+        recent_ids = request.session.get('recently_viewed', [])
+        if product.id in recent_ids:
+            recent_ids.remove(product.id)
+        recent_ids.insert(0, product.id)
+        request.session['recently_viewed'] = recent_ids[:6]
+        recent_products = Product.objects.filter(id__in=recent_ids[1:])
+        recent_map = {item.id: item for item in recent_products}
+        recent_products = [recent_map[item_id] for item_id in recent_ids[1:] if item_id in recent_map]
+
+        recommended_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
         return render(request, "app/productdetail.html", {
             'product': product,
             'wishlist': wishlist,
+            'variants': variants,
+            'selected_variant': selected_variant,
+            'reviews': reviews,
+            'avg_rating': avg_rating,
+            'review_count': review_count,
+            'can_review': can_review,
+            'review_form': ProductReviewForm(),
+            'recent_products': recent_products,
+            'recommended_products': recommended_products,
         })
     
 
@@ -153,10 +207,25 @@ class updateAddress(View):
         return redirect("address")
     
 def add_to_cart(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     user=request.user
     product_id=request.GET.get('prod_id')
+    variant_id=request.GET.get('variant_id')
     product = Product.objects.get(id=product_id)
-    Cart(user=user,product=product).save()
+    variant = None
+    if variant_id:
+        variant = ProductVariant.objects.filter(id=variant_id, product=product).first()
+
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,
+        product=product,
+        variant=variant,
+        defaults={'quantity': 1}
+    )
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
     return redirect("/cart")
 
 def show_cart(request):
@@ -164,9 +233,11 @@ def show_cart(request):
     cart = Cart.objects.filter(user=user)
     amount = 0
     for p in cart:
-        value = p.quantity * p.product.discounted_price
+        unit_price = p.variant.discounted_price if p.variant else p.product.discounted_price
+        value = p.quantity * unit_price
         amount = amount + value
-    totalamount = amount + 40
+    shipping = 40 if amount > 0 else 0
+    totalamount = amount + shipping
     
     return render(request, 'app/addtocart.html',locals())
 
@@ -179,7 +250,8 @@ class checkout(View):
 
         famount = 0
         for p in cart_items:
-            famount += p.quantity * p.product.discounted_price
+            unit_price = p.variant.discounted_price if p.variant else p.product.discounted_price
+            famount += p.quantity * unit_price
 
         totalamount = famount + 40
         razoramount = int(totalamount * 100)  # in paise
@@ -259,6 +331,7 @@ def payment_done(request):
             user=user,
             customer=customer,
             product=item.product,
+            variant=item.variant,
             quantity=item.quantity,
             payment=payment
         )
@@ -273,12 +346,9 @@ def orders(request):
 
 def plus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id')
+        cart_id = request.GET.get('cart_id')
 
-        cart_item = Cart.objects.filter(
-            product_id=prod_id,
-            user=request.user
-        ).first()
+        cart_item = Cart.objects.filter(id=cart_id, user=request.user).first()
 
         if cart_item:
             cart_item.quantity += 1
@@ -291,23 +361,23 @@ def plus_cart(request):
             amount += item.quantity * item.product.discounted_price
 
         totalamount = amount + 40
+        shipping = 40 if amount > 0 else 0
+        totalamount = amount + shipping
 
         data = {
-            'quantity': cart_item.quantity,
+            'quantity': cart_item.quantity if cart_item else 0,
             'amount': amount,
-            'totalamount': totalamount
+            'totalamount': totalamount,
+            'shipping': shipping
         }
         return JsonResponse(data)
     
 
 def minus_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id')
+        cart_id = request.GET.get('cart_id')
 
-        cart_item = Cart.objects.filter(
-            product_id=prod_id,
-            user=request.user
-        ).first()
+        cart_item = Cart.objects.filter(id=cart_id, user=request.user).first()
 
         if cart_item:
             if cart_item.quantity > 1:
@@ -323,7 +393,7 @@ def minus_cart(request):
         cart = Cart.objects.filter(user=request.user)
 
         amount = sum(
-            item.quantity * item.product.discounted_price
+            item.quantity * (item.variant.discounted_price if item.variant else item.product.discounted_price)
             for item in cart
         )
 
@@ -333,23 +403,21 @@ def minus_cart(request):
         return JsonResponse({
             'quantity': quantity,
             'amount': amount,
-            'totalamount': totalamount
+            'totalamount': totalamount,
+            'shipping': shipping
         })
    
 
 def remove_cart(request):
     if request.method == 'GET':
-        prod_id = request.GET.get('prod_id')
+        cart_id = request.GET.get('cart_id')
 
-        Cart.objects.filter(
-            product_id=prod_id,
-            user=request.user
-        ).delete()
+        Cart.objects.filter(id=cart_id, user=request.user).delete()
 
         cart = Cart.objects.filter(user=request.user)
 
         amount = sum(
-            item.quantity * item.product.discounted_price
+            item.quantity * (item.variant.discounted_price if item.variant else item.product.discounted_price)
             for item in cart
         )
 
@@ -358,7 +426,67 @@ def remove_cart(request):
 
         return JsonResponse({
             'amount': amount,
-            'totalamount': totalamount
+            'totalamount': totalamount,
+            'shipping': shipping
         })
+
+
+def plus_wishlist(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        prod_id = request.GET.get('prod_id')
+        product = Product.objects.filter(id=prod_id).first()
+        if product:
+            Wishlist.objects.get_or_create(user=request.user, product=product)
+        return JsonResponse({'message': 'Added to wishlist'})
+    return JsonResponse({'message': 'Unauthorized'}, status=401)
+
+
+def minus_wishlist(request):
+    if request.method == 'GET' and request.user.is_authenticated:
+        prod_id = request.GET.get('prod_id')
+        Wishlist.objects.filter(user=request.user, product_id=prod_id).delete()
+        return JsonResponse({'message': 'Removed from wishlist'})
+    return JsonResponse({'message': 'Unauthorized'}, status=401)
+
+
+def wishlist_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    return render(request, 'app/wishlist.html', {'wishlist_items': wishlist_items})
+
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    results = []
+    if query:
+        results = Product.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(composition__icontains=query)
+        )
+    return render(request, 'app/search.html', {'query': query, 'results': results})
+
+
+def add_review(request, pk):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    product = get_object_or_404(Product, pk=pk)
+    if ProductReview.objects.filter(product=product, user=request.user).exists():
+        messages.warning(request, "You already reviewed this product.")
+        return redirect('product-detail', pk=pk)
+
+    if request.method == 'POST':
+        form = ProductReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            messages.success(request, "Thanks for your review!")
+        else:
+            messages.warning(request, "Please correct the review form.")
+    return redirect('product-detail', pk=pk)
     
 

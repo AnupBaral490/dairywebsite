@@ -15,8 +15,9 @@
                 <div class="product-detail">
                     <h1>{{ product.title }}</h1>
                     <div class="d-flex align-items-center gap-3 flex-wrap mb-3">
-                        <span class="product-price">Rs.{{ product.discounted_price }}/-</span>
-                        <span class="product-meta text-decoration-line-through">Rs. {{ product.selling_price }}/-</span>
+                        <span class="product-price" id="productDiscounted">Rs.{{ selected_variant.discounted_price|default:product.discounted_price }}/-</span>
+                        <span class="product-meta text-decoration-line-through" id="productSelling">Rs. {{ selected_variant.selling_price|default:product.selling_price }}/-</span>
+                        <span class="badge bg-light text-dark">{{ avg_rating|floatformat:1 }} stars ({{ review_count }})</span>
                     </div>
 
                     <h4 class="mb-3">Product Features</h4>
@@ -25,8 +26,33 @@
                     </ul>
 
                     <div class="d-flex flex-wrap gap-3 mt-4">
-                        <form action="{% url 'add_to_cart' %}" method="get" class="d-inline">
+                        <form action="{% url 'add_to_cart' %}" method="get" class="d-inline" id="variantForm">
                             <input type="hidden" name="prod_id" value="{{ product.id }}">
+                            {% if variants %}
+                            <input type="hidden" name="variant_id" id="variantInput" value="{{ selected_variant.id }}">
+                            {% endif %}
+                            {% if variants %}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Pack Size</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for variant in variants %}
+                                    <input
+                                        type="radio"
+                                        class="btn-check variant-option"
+                                        name="variant_choice"
+                                        id="variant-{{ variant.id }}"
+                                        value="{{ variant.id }}"
+                                        data-discounted="{{ variant.discounted_price }}"
+                                        data-selling="{{ variant.selling_price }}"
+                                        {% if selected_variant and variant.id == selected_variant.id %}checked{% endif %}
+                                    >
+                                    <label class="btn btn-outline-secondary" for="variant-{{ variant.id }}">
+                                        {{ variant.pack_size_label }}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
                             <button type="submit" class="btn btn-brand px-4 py-2">Add to Cart</button>
                         </form>
 
@@ -43,4 +69,92 @@
         </div>
     </div>
 </section>
+
+<section class="section section-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-12 col-lg-6">
+                <div class="card-soft">
+                    <h3 class="mb-3">Customer Reviews</h3>
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="mb-3">
+                            <div class="fw-semibold">{{ review.user.username }} · {{ review.rating }} stars</div>
+                            {% if review.title %}<div class="text-muted">{{ review.title }}</div>{% endif %}
+                            {% if review.body %}<div>{{ review.body }}</div>{% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No reviews yet. Be the first to review.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card-soft">
+                    <h3 class="mb-3">Write a Review</h3>
+                    {% if can_review %}
+                        <form method="post" action="{% url 'add-review' product.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Rating (1-5)</label>
+                                {{ review_form.rating }}
+                            </div>
+                            <div class="mb-3">
+                                {{ review_form.title }}
+                            </div>
+                            <div class="mb-3">
+                                {{ review_form.body }}
+                            </div>
+                            <button class="btn btn-brand" type="submit">Submit Review</button>
+                        </form>
+                    {% elif request.user.is_authenticated %}
+                        <p class="text-muted">You have already reviewed this product.</p>
+                    {% else %}
+                        <p class="text-muted">Please log in to submit a review.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if recent_products %}
+<section class="section">
+    <div class="container">
+        <h3 class="mb-4">Recently Viewed</h3>
+        <div class="row g-4">
+            {% for item in recent_products %}
+            <div class="col-12 col-sm-6 col-lg-3">
+                <a href="{% url 'product-detail' item.id %}" class="text-decoration-none">
+                    <div class="card-soft text-center">
+                        <img src="{{ item.product_image.url }}" class="img-fluid" alt="{{ item.title }}">
+                        <div class="fw-semibold mt-3">{{ item.title }}</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if recommended_products %}
+<section class="section section-light">
+    <div class="container">
+        <h3 class="mb-4">Recommended for You</h3>
+        <div class="row g-4">
+            {% for item in recommended_products %}
+            <div class="col-12 col-sm-6 col-lg-3">
+                <a href="{% url 'product-detail' item.id %}" class="text-decoration-none">
+                    <div class="card-soft text-center">
+                        <img src="{{ item.product_image.url }}" class="img-fluid" alt="{{ item.title }}">
+                        <div class="fw-semibold mt-3">{{ item.title }}</div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 {% endblock main-content %}

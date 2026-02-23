@@ -12,6 +12,9 @@ urlpatterns = [
     path('category/<slug:val>', views.CategoryView.as_view(), name='category'),
     path('category-title/<val>', views.CategoryTitle.as_view(), name='category-title'),
     path('product-detail/<int:pk>', views.ProductDetail.as_view(), name='product-detail'),
+    path('product-detail/<int:pk>/review/', views.add_review, name='add-review'),
+    path('search/', views.search, name='search'),
+    path('wishlist/', views.wishlist_view, name='wishlist'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
@@ -26,6 +29,8 @@ urlpatterns = [
     path('pluscart/', views.plus_cart),
     path('minuscart/', views.minus_cart),
     path('removecart/', views.remove_cart),
+    path('pluswishlist/', views.plus_wishlist),
+    path('minuswishlist/', views.minus_wishlist),
     #login authentication
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
     path('accounts/login/', auth_view.LoginView.as_view(template_name='app/login.html', authentication_form=LoginForm) , name='login'),

@@ -7,6 +7,17 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-sm-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Filter by Price</h5>
+                    <form method="get" class="d-grid gap-2">
+                        <input type="number" step="0.01" name="min_price" value="{{ min_price }}" class="form-control" placeholder="Min price">
+                        <input type="number" step="0.01" name="max_price" value="{{ max_price }}" class="form-control" placeholder="Max price">
+                        <button class="btn btn-brand" type="submit">Apply</button>
+                    </form>
+                </div>
+            </div>
+
             <div class="list-group">
             {% for val in title  %}
                <a href="{% url 'category-title' val.title %}"
@@ -34,16 +45,16 @@
         <div class="col-sm-9">
             <div class="row">
                 {% for prod in product %}
-                <div class="col text-center mb-4">
-                    <a href="{% url 'product-detail' prod.id %}" class="btn">
-                    <div>
-                        <img src="{{ prod.product_image.url }}" width="300px" height="200px" />
-                        <div class="fw-bold">{{ prod.title }}</div>
-                        <div class="fw-bold text-danger">
-                            Rs.{{ prod.discounted_price }}/-
-                            <small class="fw-light text-decoration-line-through">{{ prod.selling_price }}</small>
+                <div class="col-12 col-sm-6 col-lg-4 mb-4">
+                    <a href="{% url 'product-detail' prod.id %}" class="text-decoration-none">
+                        <div class="card-soft h-100 text-center">
+                            <img src="{{ prod.product_image.url }}" class="img-fluid" alt="{{ prod.title }}">
+                            <div class="fw-semibold mt-3">{{ prod.title }}</div>
+                            <div class="fw-semibold text-danger">
+                                Rs.{{ prod.effective_discounted_price }}/-
+                                <small class="fw-light text-decoration-line-through">{{ prod.effective_selling_price }}</small>
+                            </div>
                         </div>
-                    </div>
                     </a>
                 </div>
                 {% endfor %}

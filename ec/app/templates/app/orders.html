@@ -20,6 +20,9 @@
                 </div>
                 <div class="col-sm-7">
                     <p>Product : {{ op.product.title }}</p>
+                    {% if op.variant %}
+                    <p>Pack Size : {{ op.variant.pack_size_label }}</p>
+                    {% endif %}
                     <p>Quantity : {{ op.quantity }}</p>
                     <p>Price : {{ op.total_cost }}</p>
                 </div>

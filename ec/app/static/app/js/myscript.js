@@ -1,5 +1,5 @@
 $('.plus-cart').click(function () {
-    var id = $(this).attr("pid").toString();
+    var id = $(this).attr("cart_id").toString();
 
     // find quantity span in the SAME cart row
     var quantitySpan = $(this).closest('.row').find('.quantity');
@@ -8,18 +8,19 @@ $('.plus-cart').click(function () {
         type: "GET",
         url: "/pluscart",
         data: {
-            prod_id: id
+            cart_id: id
         },
         success: function (data) {
             quantitySpan.text(data.quantity);
             $('#amount').text("Rs." + data.amount);
+            $('#shippingamount').text("Rs." + data.shipping);
             $('#totalamount').text("Rs." + data.totalamount);
         }
     });
 });
 
 $('.minus-cart').click(function () {
-    var id = $(this).attr("pid").toString();
+    var id = $(this).attr("cart_id").toString();
 
     // find quantity span in same cart row
     var quantitySpan = $(this).closest('.row').find('.quantity');
@@ -28,28 +29,30 @@ $('.minus-cart').click(function () {
         type: "GET",
         url: "/minuscart",
         data: {
-            prod_id: id
+            cart_id: id
         },
         success: function (data) {
             quantitySpan.text(data.quantity);
             $('#amount').text("Rs." + data.amount);
+            $('#shippingamount').text("Rs." + data.shipping);
             $('#totalamount').text("Rs." + data.totalamount);
         }
     });
 });
 
 $('.remove-cart').click(function () {
-    var id = $(this).attr("pid").toString();
+    var id = $(this).attr("cart_id").toString();
     var cartRow = $(this).closest('.row');
 
     $.ajax({
         type: "GET",
         url: "/removecart",
         data: {
-            prod_id: id
+            cart_id: id
         },
         success: function (data) {
             $('#amount').text("Rs." + data.amount);
+            $('#shippingamount').text("Rs." + data.shipping);
             $('#totalamount').text("Rs." + data.totalamount);
             cartRow.remove();
         }
@@ -66,8 +69,29 @@ $('.plus-wishlist').click(function(){
             prod_id:id
         },
         success:function(data){
-            //alert(data.message)
-            window.location.href = `http://localhost:8000/product-detail/${id}`
+            window.location.reload();
         }
     })
 })
+
+$('.minus-wishlist').click(function(){
+    var id=$(this).attr("pid").toString();
+    $.ajax({
+        type:"GET",
+        url:"/minuswishlist",
+        data:{
+            prod_id:id
+        },
+        success:function(data){
+            window.location.reload();
+        }
+    })
+})
+
+$('.variant-option').on('change', function(){
+    var discounted = $(this).data('discounted');
+    var selling = $(this).data('selling');
+    $('#productDiscounted').text(`Rs.${discounted}/-`);
+    $('#productSelling').text(`Rs. ${selling}/-`);
+    $('#variantInput').val($(this).val());
+});
