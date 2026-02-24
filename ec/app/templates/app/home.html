@@ -12,7 +12,7 @@
         <div class="carousel-content">
           <h1>Pure & Fresh Dairy</h1>
           <p>From Farm to Your Table with Love</p>
-          <a href="#products" class="btn btn-brand">Shop Now</a>
+          <a href="#products" class="btn btn-brand btn-bounce">Shop Now</a>
         </div>
       </div>
     </div>
@@ -22,7 +22,7 @@
         <div class="carousel-content">
           <h1>100% Natural Products</h1>
           <p>No Chemicals, No Additives, Just Pure Goodness</p>
-          <a href="#products" class="btn btn-brand">Explore Products</a>
+          <a href="#products" class="btn btn-brand btn-bounce">Explore Products</a>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
         <div class="carousel-content">
           <h1>Supporting Local Farmers</h1>
           <p>Fair Trade & Sustainable Dairy Farming</p>
-          <a href="{% url 'about' %}" class="btn btn-brand">Learn More</a>
+          <a href="{% url 'about' %}" class="btn btn-brand btn-bounce">Learn More</a>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@
         <div class="carousel-content">
           <h1>Quality You Can Trust</h1>
           <p>Certified & Tested for Your Family's Health</p>
-          <a href="{% url 'contact' %}" class="btn btn-brand">Get in Touch</a>
+          <a href="{% url 'contact' %}" class="btn btn-brand btn-bounce">Get in Touch</a>
         </div>
       </div>
     </div>
@@ -99,6 +99,38 @@
   </div>
 </section>
 
+<!-- Stats Section -->
+<section class="section stats-banner">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-item counter-card">
+          <div class="stat-value counter" data-target="10000">10K+</div>
+          <div class="stat-name">Happy Customers</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-item counter-card">
+          <div class="stat-value counter" data-target="500">500+</div>
+          <div class="stat-name">Trusted Farmers</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-item counter-card">
+          <div class="stat-value counter" data-target="20">20+</div>
+          <div class="stat-name">Product Types</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6">
+        <div class="stat-item counter-card">
+          <div class="stat-value counter" data-target="6">6+</div>
+          <div class="stat-name">Years Running</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% block information %}
 <section class="section section-light">
     <div class="container text-center">
@@ -127,6 +159,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'GH' %}">
+                        <div class="product-badge">Popular</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/buffalo-ghee.png' %}" class="img-fluid" alt="Ghee">
                             <p class="card-label">Ghee</p>
@@ -139,6 +172,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'CR' %}">
+                        <div class="product-badge">Best Seller</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/curd-total.png' %}" class="img-fluid" alt="Curd">
                             <p class="card-label">Curd</p>
@@ -151,6 +185,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'IC' %}">
+                        <div class="product-badge">Must Try</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/kulfi.png' %}" class="img-fluid" alt="Ice Cream">
                             <p class="card-label">Ice Cream</p>
@@ -163,6 +198,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'MS' %}">
+                        <div class="product-badge">Premium</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/milk-shake-chocolate.png' %}" class="img-fluid" alt="Milkshake">
                             <p class="card-label">Milkshake</p>
@@ -175,6 +211,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'ML' %}">
+                        <div class="product-badge">Daily Fresh</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/cow-milk.png' %}" class="img-fluid" alt="Cow Milk">
                             <p class="card-label">Cow Milk</p>
@@ -187,6 +224,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="product-category-card goodnesssec card-soft smbg">
                     <a href="{% url 'category' 'IC' %}">
+                        <div class="product-badge">Family Favorite</div>
                         <div class="goodnessseccount text-center">
                             <img src="{% static 'app/images/product/icbars.png' %}" class="img-fluid" alt="Ice Bar">
                             <p class="card-label">Ice Bar</p>
@@ -276,7 +314,7 @@
                 {% for review in reviews %}
                     <div class="col-md-6 col-lg-4">
                         <div class="testimonial-card">
-                            <div class="stars">
+                            <div class="testimonial-stars">
                                 {% for i in "12345" %}
                                     {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
                                 {% endfor %}
@@ -307,6 +345,21 @@
     </div>
 </section>
 
+<!-- Newsletter Section -->
+<section class="section newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>Stay Updated with Fresh Dairy</h2>
+            <p>Subscribe to our newsletter for exclusive deals, new products, and dairy tips</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit" class="btn btn-brand">Subscribe Now</button>
+            </form>
+            <p class="newsletter-note">We never spam. Unsubscribe at any time.</p>
+        </div>
+    </div>
+</section>
+
 <!-- CTA Section -->
 <section class="home-cta">
     <div class="container">
@@ -320,5 +373,40 @@
         </div>
     </div>
 </section>
+
+<script>
+// Counter animation
+document.addEventListener('DOMContentLoaded', function() {
+    const counters = document.querySelectorAll('.counter');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const increment = target / 50;
+        let current = 0;
+        
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                counter.textContent = Math.floor(current).toLocaleString() + (counter.textContent.includes('+') ? '+' : '');
+                setTimeout(updateCounter, 30);
+            } else {
+                counter.textContent = target.toLocaleString() + (counter.getAttribute('data-target').includes('+') ? '+' : '+');
+            }
+        };
+        
+        updateCounter();
+    });
+
+    // Newsletter form handling
+    const newsletterForm = document.querySelector('.newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for subscribing! Check your email for confirmation.');
+            this.reset();
+        });
+    }
+});
+</script>
 
 {% endblock main-content %}
