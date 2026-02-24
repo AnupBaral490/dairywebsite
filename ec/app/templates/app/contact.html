@@ -74,7 +74,8 @@
 
                     <div class="form-group">
                         <label for="phone" class="form-label">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+977 XXXXXXXXXX">
+                        <input type="tel" id="phone" name="phone" class="form-control phone-input" placeholder="+977 9840000000" value="+977 " required>
+                        <small class="form-text text-muted">Enter 10 digits after country code</small>
                     </div>
 
                     <div class="form-group form-group-full">
@@ -122,5 +123,79 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('phone');
+    const PREFIX = '+977 ';
+    const MAX_DIGITS = 10;
+
+    // Initialize with prefix
+    if (!phoneInput.value || phoneInput.value.length === 0) {
+        phoneInput.value = PREFIX;
+    }
+
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value;
+        
+        // Ensure prefix is always present
+        if (!value.startsWith(PREFIX)) {
+            value = PREFIX;
+        }
+
+        // Get only digits after prefix
+        let digits = value.substring(PREFIX.length).replace(/\D/g, '');
+
+        // Limit to 10 digits
+        if (digits.length > MAX_DIGITS) {
+            digits = digits.substring(0, MAX_DIGITS);
+        }
+
+        // Update input value
+        e.target.value = PREFIX + digits;
+    });
+
+    phoneInput.addEventListener('keydown', function(e) {
+        const value = e.target.value;
+        
+        // Prevent backspace on prefix
+        if (e.key === 'Backspace' && value.length <= PREFIX.length) {
+            e.preventDefault();
+            // Reset to just prefix
+            e.target.value = PREFIX;
+        }
+
+        // Prevent deletion with Delete key on prefix
+        if (e.key === 'Delete' && e.target.selectionStart <= PREFIX.length) {
+            e.preventDefault();
+        }
+    });
+
+    phoneInput.addEventListener('focus', function(e) {
+        // Ensure prefix is there when focusing
+        if (!e.target.value.startsWith(PREFIX)) {
+            e.target.value = PREFIX;
+        }
+        // Move cursor to end
+        e.target.selectionStart = e.target.value.length;
+        e.target.selectionEnd = e.target.value.length;
+    });
+
+    // On form submit, validate phone number
+    const form = document.querySelector('.contact-form-grid');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const phone = phoneInput.value;
+            const digits = phone.substring(PREFIX.length).replace(/\D/g, '');
+            
+            if (digits.length !== MAX_DIGITS) {
+                e.preventDefault();
+                alert('Please enter a valid 10-digit phone number');
+                phoneInput.focus();
+            }
+        });
+    }
+});
+</script>
 
 {% endblock main-content %}

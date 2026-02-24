@@ -648,6 +648,19 @@ textarea.form-control {
 	transform: translateX(4px);
 }
 
+.phone-input {
+	font-family: 'Courier New', monospace;
+	letter-spacing: 1px;
+	font-weight: 500;
+}
+
+.form-text {
+	display: block;
+	margin-top: 4px;
+	font-size: 0.85rem;
+	color: var(--ink-500);
+}
+
 .why-icon {
 	font-size: 48px;
 	margin-bottom: 16px;
