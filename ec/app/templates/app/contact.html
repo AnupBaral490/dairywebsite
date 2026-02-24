@@ -4,37 +4,121 @@
 
 {% block main-content %}
 
-<section class="contact-section" style="background: url('https://png.pngtree.com/thumb_back/fh260/background/20250307/pngtree-rustic-farm-stall-fresh-dairy-products-milk-cheese-image_17078739.jpg') no-repeat center/cover; background-size: cover; min-height: 100vh;">
-    <div class="contact-overlay" style="background: rgba(0, 0, 0, 0.6); min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-        <div class="contact-container" style="display: grid; grid-template-columns: 1fr 1fr; max-width: 1000px; width: 90%; background: #ffffff; border-radius: 15px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+<section class="contact-section">
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <div class="contact-hero-content">
+            <h1 class="contact-hero-title">Get in Touch</h1>
+            <p class="contact-hero-subtitle">Have a question? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+        </div>
+    </div>
 
-            <div class="contact-info" style="background: #2c6e49; color: white; padding: 40px;">
-                <h2>Contact Us</h2>
-                <p>
-                    Have questions about our dairy products?  
-                    Feel free to contact us — we’re happy to help 🥛
-                </p>
+    <!-- Main Contact Container -->
+    <div class="contact-main-wrapper">
+        <div class="contact-wrapper">
+            <!-- Contact Info Cards -->
+            <div class="contact-info-section">
+                <div class="info-card">
+                    <div class="info-icon">📍</div>
+                    <h3>Location</h3>
+                    <p>Fresh Dairy, Nepal</p>
+                </div>
 
-                <ul style="list-style: none; padding: 0;">
-                    <li><strong>📍 Address:</strong> Fresh Dairy, Nepal</li>
-                    <li><strong>📞 Phone:</strong> +977 9846880980</li>
-                    <li><strong>📧 Email:</strong> baralanup832@gmail.com</li>
-                </ul>
+                <div class="info-card">
+                    <div class="info-icon">📞</div>
+                    <h3>Phone</h3>
+                    <p><a href="tel:+97798468809">+977 9846880980</a></p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">📧</div>
+                    <h3>Email</h3>
+                    <p><a href="mailto:baralanup832@gmail.com">baralanup832@gmail.com</a></p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">🕐</div>
+                    <h3>Availability</h3>
+                    <p>Mon - Fri: 9:00 AM - 6:00 PM<br>Sat - Sun: 10:00 AM - 4:00 PM</p>
+                </div>
             </div>
 
-            <div class="contact-form" style="padding: 40px;">
-                <form method="POST">
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <div class="form-header">
+                    <h2>Send us a Message</h2>
+                    <p>Fill out the form below and we'll get back to you shortly</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" class="contact-form-grid">
                     {% csrf_token %}
 
-                    <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
-                    <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
-                    <input type="text" name="phone" placeholder="Phone Number" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;">
-                    <textarea name="message" rows="4" placeholder="Your Message" required style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:6px; font-size:14px;"></textarea>
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required>
+                    </div>
 
-                    <button type="submit" style="width:100%; padding:12px; background:#2c6e49; color:white; border:none; border-radius:6px; font-size:15px; cursor:pointer;">Send Message</button>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="+977 XXXXXXXXXX">
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" rows="6" class="form-control" placeholder="Tell us how we can help..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <span class="btn-text">Send Message</span>
+                        <span class="btn-icon">→</span>
+                    </button>
                 </form>
             </div>
+        </div>
+    </div>
+</section>
 
+<!-- Why Contact Us Section -->
+<section class="section section-light">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <div class="card-soft text-center">
+                    <div class="why-icon">💬</div>
+                    <h3>Quick Response</h3>
+                    <p>We respond to all inquiries within 24 hours to ensure you get help when you need it.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card-soft text-center">
+                    <div class="why-icon">👥</div>
+                    <h3>Expert Support</h3>
+                    <p>Our knowledgeable team is ready to assist you with any questions about our products.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card-soft text-center">
+                    <div class="why-icon">✅</div>
+                    <h3>100% Support</h3>
+                    <p>Complete satisfaction is our priority. We're here to help you succeed.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
