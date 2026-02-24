@@ -15,7 +15,9 @@ from django.shortcuts import get_object_or_404
 
 # Create your views here.
 def home(request):
-    return render(request,"app/home.html")
+    # Get latest customer reviews
+    reviews = ProductReview.objects.select_related('user', 'product').order_by('-created_at')[:6]
+    return render(request,"app/home.html",{'reviews': reviews})
 
 def about(request):
     return render(request, "app/about.html")

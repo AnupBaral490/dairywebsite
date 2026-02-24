@@ -272,47 +272,37 @@
         </div>
 
         <div class="row gy-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="testimonial-text">"Fresh Dairy products are absolutely amazing! The milk is so fresh and creamy. I love that they're completely natural with no additives."</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">R</div>
-                        <div>
-                            <div class="author-name">Ramesh Kumar</div>
-                            <div class="author-location">Kathmandu</div>
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="testimonial-card">
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="testimonial-text">
+                                "{{ review.body }}"
+                                <br>
+                                <small style="font-style: normal; color: var(--ink-500);">
+                                    <strong>Product:</strong> {{ review.product.title }}
+                                </small>
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">{{ review.user.first_name|first|upper }}</div>
+                                <div>
+                                    <div class="author-name">{{ review.user.first_name }} {{ review.user.last_name }}</div>
+                                    <div class="author-location">Customer</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p class="text-muted" style="font-size: 1.1rem;">No customer reviews yet. Be the first to share your experience!</p>
                 </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="testimonial-text">"I've been buying from Fresh Dairy for over a year now. The quality is consistent, delivery is fast, and the customer service is excellent!"</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">P</div>
-                        <div>
-                            <div class="author-name">Priya Sharma</div>
-                            <div class="author-location">Pokhara</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-4">
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="testimonial-text">"My family loves the ghee and paneer. I trust Fresh Dairy because they care about quality and supporting local farmers. Highly recommended!"</p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">N</div>
-                        <div>
-                            <div class="author-name">Neha Paudel</div>
-                            <div class="author-location">Lalitpur</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 </section>
