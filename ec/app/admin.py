@@ -4,6 +4,7 @@ from .models import ContactMessage
 from .models import Customer
 from .models import Cart
 from . models import Payment, OrderPlaced, Wishlist
+from .models import LoyaltyTier, CustomerLoyalty, RewardTransaction, Reward, RedeemHistory
 # Register your models here.
 
 @admin.register(Product)
@@ -66,4 +67,84 @@ class FarmerModelAdmin(admin.ModelAdmin):
 class FarmerMessageModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'farmer', 'user', 'product', 'subject', 'created_at']
     list_filter = ['created_at']
+
+
+# Loyalty & Rewards Admin
+
+@admin.register(LoyaltyTier)
+class LoyaltyTierAdmin(admin.ModelAdmin):
+    list_display = ['tier_name', 'min_points', 'max_points', 'bonus_multiplier', 'color']
+    fieldsets = (
+        ('Tier Information', {
+            'fields': ('tier_name', 'min_points', 'max_points', 'bonus_multiplier'),
+        }),
+        ('Display', {
+            'fields': ('color', 'icon_emoji', 'description'),
+        }),
+    )
+
+
+@admin.register(CustomerLoyalty)
+class CustomerLoyaltyAdmin(admin.ModelAdmin):
+    list_display = ['user', 'total_points', 'current_tier', 'total_orders', 'joined_date']
+    list_filter = ['current_tier', 'joined_date']
+    search_fields = ['user__username', 'user__email']
+    readonly_fields = ['joined_date', 'total_orders', 'lifetime_purchases']
+    fieldsets = (
+        ('Customer Information', {
+            'fields': ('user', 'current_tier'),
+        }),
+        ('Points & Statistics', {
+            'fields': ('total_points', 'lifetime_purchases', 'total_orders'),
+        }),
+        ('Dates', {
+            'fields': ('joined_date', 'last_purchase_date'),
+        }),
+    )
+
+
+@admin.register(RewardTransaction)
+class RewardTransactionAdmin(admin.ModelAdmin):
+    list_display = ['loyalty', 'transaction_type', 'points', 'created_at']
+    list_filter = ['transaction_type', 'created_at']
+    search_fields = ['loyalty__user__username', 'description']
+    readonly_fields = ['created_at', 'loyalty']
+    
+    def has_add_permission(self, request):
+        return False  # Transactions created automatically
+    
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
+@admin.register(Reward)
+class RewardAdmin(admin.ModelAdmin):
+    list_display = ['name', 'reward_type', 'points_required', 'is_active', 'times_used']
+    list_filter = ['reward_type', 'is_active', 'created_at']
+    search_fields = ['name', 'description']
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'description', 'reward_type'),
+        }),
+        ('Points Requirements', {
+            'fields': ('points_required',),
+        }),
+        ('Reward Details', {
+            'fields': ('discount_percentage', 'discount_amount', 'free_product'),
+        }),
+        ('Status & Usage', {
+            'fields': ('is_active', 'max_uses', 'times_used'),
+        }),
+    )
+
+
+@admin.register(RedeemHistory)
+class RedeemHistoryAdmin(admin.ModelAdmin):
+    list_display = ['customer', 'reward', 'points_used', 'redeemed_at']
+    list_filter = ['reward', 'redeemed_at']
+    search_fields = ['customer__username', 'reward__name']
+    readonly_fields = ['redeemed_at']
+    
+    def has_add_permission(self, request):
+        return False  # Redemptions created when user redeems
     search_fields = ['farmer__farm_name', 'user__username', 'subject']

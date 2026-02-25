@@ -12,6 +12,9 @@ from django.conf import settings
 from django.core.mail import send_mail
 from .models import Payment
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import CustomerLoyalty, LoyaltyTier, RewardTransaction, Reward, RedeemHistory
+from django.utils import timezone
 
 # Create your views here.
 def home(request):
@@ -329,6 +332,7 @@ def payment_done(request):
     payment.save()
 
     # Create orders from cart
+    total_amount = 0
     cart_items = Cart.objects.filter(user=user)
     for item in cart_items:
         OrderPlaced.objects.create(
@@ -339,7 +343,22 @@ def payment_done(request):
             quantity=item.quantity,
             payment=payment
         )
+        total_amount += item.quantity * item.product.discounted_price
         item.delete()
+
+    # Award loyalty points (1 point per rupee)
+    try:
+        loyalty, created = CustomerLoyalty.objects.get_or_create(user=user)
+        loyalty.total_orders += 1
+        loyalty.lifetime_purchases += total_amount
+        loyalty.last_purchase_date = timezone.now()
+        loyalty.save()
+        
+        # Add points based on purchase amount
+        points_earned = loyalty.add_points(int(total_amount))
+        messages.success(request, f"✨ Order placed! You earned {points_earned} loyalty points!")
+    except Exception as e:
+        messages.info(request, "Order placed successfully!")
 
     return redirect("orders")
 
@@ -567,5 +586,149 @@ def contact_farmer(request, pk):
         else:
             messages.warning(request, "Please correct the form and try again.")
     return redirect('farmer-detail', pk=pk)
+
+
+# Loyalty & Rewards Views
+
+@login_required(login_url='login')
+def loyalty_dashboard(request):
+    """Display customer loyalty dashboard"""
+    customer_loyalty, created = CustomerLoyalty.objects.get_or_create(user=request.user)
+    
+    # Get transaction history
+    transactions = RewardTransaction.objects.filter(loyalty=customer_loyalty).order_by('-created_at')[:10]
+    
+    # Get all tiers for display
+    tiers = LoyaltyTier.objects.all().order_by('min_points')
+    
+    # Calculate progress to next tier
+    current_points = customer_loyalty.total_points
+    current_tier = customer_loyalty.current_tier
+    
+    next_tier = None
+    points_to_next = None
+    
+    if current_tier:
+        next_tier = LoyaltyTier.objects.filter(min_points__gt=current_tier.min_points).order_by('min_points').first()
+        if next_tier:
+            points_to_next = next_tier.min_points - current_points
+    
+    context = {
+        'loyalty': customer_loyalty,
+        'transactions': transactions,
+        'tiers': tiers,
+        'current_points': current_points,
+        'next_tier': next_tier,
+        'points_to_next': max(0, points_to_next) if points_to_next else None,
+        'tier_progress': (current_points / (next_tier.min_points if next_tier else 100)) * 100 if next_tier else 100
+    }
+    
+    return render(request, 'app/loyalty_dashboard.html', context)
+
+
+@login_required(login_url='login')
+def rewards_shop(request):
+    """Display available rewards to redeem"""
+    customer_loyalty, created = CustomerLoyalty.objects.get_or_create(user=request.user)
+    
+    # Get all active rewards
+    rewards = Reward.objects.filter(is_active=True).order_by('points_required')
+    
+    # Filter by reward type if specified
+    reward_type = request.GET.get('type')
+    if reward_type:
+        rewards = rewards.filter(reward_type=reward_type)
+    
+    # Check which rewards the user can afford
+    available_rewards = []
+    for reward in rewards:
+        can_afford = customer_loyalty.total_points >= reward.points_required
+        is_available = reward.is_available()
+        available_rewards.append({
+            'reward': reward,
+            'can_afford': can_afford,
+            'is_available': is_available
+        })
+    
+    context = {
+        'loyalty': customer_loyalty,
+        'available_rewards': available_rewards,
+        'reward_types': Reward.REWARD_TYPES
+    }
+    
+    return render(request, 'app/rewards_shop.html', context)
+
+
+@login_required(login_url='login')
+def redeem_reward(request, reward_id):
+    """Redeem a specific reward"""
+    customer_loyalty = CustomerLoyalty.objects.get(user=request.user)
+    reward = get_object_or_404(Reward, id=reward_id, is_active=True)
+    
+    # Check if user can redeem
+    if not reward.is_available():
+        messages.error(request, "This reward is no longer available.")
+        return redirect('rewards-shop')
+    
+    if customer_loyalty.total_points < reward.points_required:
+        messages.error(request, f"You need {reward.points_required - customer_loyalty.total_points} more points.")
+        return redirect('rewards-shop')
+    
+    # Perform redemption
+    if customer_loyalty.redeem_points(reward.points_required, reward.name):
+        reward.times_used += 1
+        reward.save()
+        
+        # Create redemption history
+        RedeemHistory.objects.create(
+            customer=request.user,
+            reward=reward,
+            points_used=reward.points_required
+        )
+        
+        messages.success(request, f"🎉 Successfully redeemed {reward.name}! Check your email for details.")
+        
+        # Send email to user
+        email_body = f"""
+Hello {request.user.first_name or request.user.username},
+
+Congratulations! You've successfully redeemed: {reward.name}
+
+Points Used: {reward.points_required}
+Remaining Points: {customer_loyalty.total_points}
+
+Details: {reward.description}
+
+Thank you for being a loyal customer!
+
+Best regards,
+Fresh Dairy Team
+        """
+        
+        send_mail(
+            f"Reward Redeemed: {reward.name}",
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [request.user.email],
+            fail_silently=True,
+        )
+    else:
+        messages.error(request, "Redemption failed. Please try again.")
+    
+    return redirect('rewards-shop')
+
+
+@login_required(login_url='login')
+def my_rewards(request):
+    """Display user's redeemed rewards history"""
+    redeemed = RedeemHistory.objects.filter(customer=request.user).order_by('-redeemed_at')
+    
+    context = {
+        'redeemed_rewards': redeemed,
+        'total_redeemed': redeemed.count()
+    }
+    
+    return render(request, 'app/my_rewards.html', context)
+    
     
 

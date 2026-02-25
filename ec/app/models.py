@@ -188,3 +188,150 @@ class FarmerMessage(models.Model):
 
     def __str__(self):
         return f"{self.farmer.farm_name} - {self.user.username}"
+
+
+# Loyalty & Rewards Models
+class LoyaltyTier(models.Model):
+    TIER_CHOICES = (
+        ('BRONZE', 'Bronze Tier'),
+        ('SILVER', 'Silver Tier'),
+        ('GOLD', 'Gold Tier'),
+        ('PLATINUM', 'Platinum Tier'),
+    )
+    
+    tier_name = models.CharField(max_length=20, choices=TIER_CHOICES, unique=True)
+    min_points = models.IntegerField(default=0)
+    max_points = models.IntegerField(default=9999999)
+    bonus_multiplier = models.FloatField(default=1.0)  # 1.0 = 1x, 1.1 = 1.1x points
+    description = models.TextField()
+    color = models.CharField(max_length=20, default='#999999')
+    icon_emoji = models.CharField(max_length=5, default='⭐')
+    
+    class Meta:
+        ordering = ['min_points']
+    
+    def __str__(self):
+        return f"{self.tier_name} (from {self.min_points} points)"
+
+
+class CustomerLoyalty(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='loyalty')
+    total_points = models.IntegerField(default=0)
+    current_tier = models.ForeignKey(LoyaltyTier, on_delete=models.SET_NULL, null=True, blank=True)
+    lifetime_purchases = models.FloatField(default=0)
+    total_orders = models.IntegerField(default=0)
+    joined_date = models.DateTimeField(auto_now_add=True)
+    last_purchase_date = models.DateTimeField(null=True, blank=True)
+    
+    def update_tier(self):
+        """Update customer tier based on points"""
+        tier = LoyaltyTier.objects.filter(
+            min_points__lte=self.total_points,
+            max_points__gte=self.total_points
+        ).first()
+        if tier:
+            self.current_tier = tier
+            self.save()
+    
+    def get_bonus_multiplier(self):
+        """Get point multiplier for current tier"""
+        if self.current_tier:
+            return self.current_tier.bonus_multiplier
+        return 1.0
+    
+    def add_points(self, points):
+        """Add points to customer account"""
+        multiplier = self.get_bonus_multiplier()
+        final_points = int(points * multiplier)
+        self.total_points += final_points
+        self.update_tier()
+        RewardTransaction.objects.create(
+            loyalty=self,
+            transaction_type='EARN',
+            points=final_points,
+            description=f'Order purchase ({final_points} points)'
+        )
+        return final_points
+    
+    def redeem_points(self, points, reward_name):
+        """Redeem points"""
+        if self.total_points >= points:
+            self.total_points -= points
+            self.update_tier()
+            RewardTransaction.objects.create(
+                loyalty=self,
+                transaction_type='REDEEM',
+                points=points,
+                description=f'Redeemed: {reward_name}'
+            )
+            return True
+        return False
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.total_points} points ({self.current_tier})"
+
+
+class RewardTransaction(models.Model):
+    TRANSACTION_CHOICES = (
+        ('EARN', 'Points Earned'),
+        ('REDEEM', 'Points Redeemed'),
+        ('BONUS', 'Bonus Points'),
+        ('EXPIRE', 'Points Expired'),
+    )
+    
+    loyalty = models.ForeignKey(CustomerLoyalty, on_delete=models.CASCADE, related_name='transactions')
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_CHOICES)
+    points = models.IntegerField()
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.loyalty.user.username} - {self.transaction_type} {self.points} points"
+
+
+class Reward(models.Model):
+    REWARD_TYPES = (
+        ('DISCOUNT', 'Discount'),
+        ('FREEPRODUCT', 'Free Product'),
+        ('SHIPPING', 'Free Shipping'),
+        ('UPGRADE', 'Subscription Upgrade'),
+    )
+    
+    name = models.CharField(max_length=120)
+    description = models.TextField()
+    reward_type = models.CharField(max_length=20, choices=REWARD_TYPES)
+    points_required = models.IntegerField()
+    discount_percentage = models.FloatField(default=0)  # For discount rewards
+    discount_amount = models.FloatField(default=0)  # For discount rewards
+    free_product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    max_uses = models.IntegerField(null=True, blank=True)  # None = unlimited
+    times_used = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['points_required']
+    
+    def __str__(self):
+        return f"{self.name} - {self.points_required} points"
+    
+    def is_available(self):
+        if not self.is_active:
+            return False
+        if self.max_uses and self.times_used >= self.max_uses:
+            return False
+        return True
+
+
+class RedeemHistory(models.Model):
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='redeemed_rewards')
+    reward = models.ForeignKey(Reward, on_delete=models.CASCADE)
+    points_used = models.IntegerField()
+    redeemed_at = models.DateTimeField(auto_now_add=True)
+    order = models.ForeignKey('OrderPlaced', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.customer.username} redeemed {self.reward.name}"

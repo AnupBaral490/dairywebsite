@@ -53,4 +53,9 @@ urlpatterns = [
     path('password-reset-complete/', auth_view.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html') ,
     name='password_reset_complete'),
     
+    # Loyalty & Rewards URLs
+    path('loyalty/', views.loyalty_dashboard, name='loyalty'),
+    path('rewards/', views.rewards_shop, name='rewards-shop'),
+    path('rewards/redeem/<int:reward_id>/', views.redeem_reward, name='redeem-reward'),
+    path('my-rewards/', views.my_rewards, name='my-rewards'),
 ]

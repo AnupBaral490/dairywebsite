@@ -67,6 +67,8 @@
         <ul class="dropdown-menu" aria-labelledby="profileDropdown">
           <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
           <li><a class="dropdown-item" href="{% url 'orders' %}">Orders</a></li>
+          <li><a class="dropdown-item" href="{% url 'loyalty' %}">🎖️ Loyalty & Rewards</a></li>
+          <li><a class="dropdown-item" href="{% url 'rewards-shop' %}">🎁 Rewards Shop</a></li>
           <li><a class="dropdown-item" href="{% url 'passwordchange' %}">Change Password</a></li>
           <li>
           <form method="post" action="{% url 'logout' %}">
