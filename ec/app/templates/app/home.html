@@ -241,6 +241,66 @@
     </div>
 </section>
 
+<!-- Special Offers & Limited Deals Section -->
+<section class="section special-offers-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">🎉 Special Offers & Limited Deals</h2>
+            <p class="section-lead">Exclusive discounts and offers just for you</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="offer-card">
+                    <div class="offer-badge">-20%</div>
+                    <div class="offer-content">
+                        <h4>First Time User</h4>
+                        <p class="offer-description">Get 20% off your first order</p>
+                        <p class="offer-code">Code: <strong>FRESH20</strong></p>
+                        <a href="{% url 'category' 'ML' %}" class="btn btn-sm btn-accent">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="offer-card">
+                    <div class="offer-badge">-15%</div>
+                    <div class="offer-content">
+                        <h4>Bulk Orders</h4>
+                        <p class="offer-description">15% off on orders above ₹5000</p>
+                        <p class="offer-code">Auto Applied</p>
+                        <a href="{% url 'category' 'ML' %}" class="btn btn-sm btn-accent">Explore</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="offer-card">
+                    <div class="offer-badge">Free</div>
+                    <div class="offer-content">
+                        <h4>Free Delivery</h4>
+                        <p class="offer-description">On orders over ₹1500 within city</p>
+                        <p class="offer-code">This Week Only</p>
+                        <a href="{% url 'category' 'ML' %}" class="btn btn-sm btn-accent">Order Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="offer-card">
+                    <div class="offer-badge">Combo</div>
+                    <div class="offer-content">
+                        <h4>Combo Packs</h4>
+                        <p class="offer-description">Buy 2, Get 1 on select items</p>
+                        <p class="offer-code">Limited Stock</p>
+                        <a href="{% url 'category' 'ML' %}" class="btn btn-sm btn-accent">View Combos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Why Choose Fresh Dairy Section -->
 <section class="section section-light">
     <div class="container">
@@ -295,6 +355,182 @@
                     <div class="why-icon">💚</div>
                     <h4>Health First</h4>
                     <p>Packed with essential nutrients and vitamins for your family's health and wellbeing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quality & Certifications Section -->
+<section class="section certifications-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">🏆 Quality & Certifications</h2>
+            <p class="section-lead">We maintain the highest standards of quality and safety</p>
+        </div>
+
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <div class="certifications-content">
+                    <div class="certification-item">
+                        <div class="cert-icon">✓</div>
+                        <div class="cert-info">
+                            <h4>ISO 9001:2015 Certified</h4>
+                            <p>International quality management system certified</p>
+                        </div>
+                    </div>
+                    <div class="certification-item">
+                        <div class="cert-icon">✓</div>
+                        <div class="cert-info">
+                            <h4>FSSAI Approved</h4>
+                            <p>Food Safety and Standards Authority of India approved</p>
+                        </div>
+                    </div>
+                    <div class="certification-item">
+                        <div class="cert-icon">✓</div>
+                        <div class="cert-info">
+                            <h4>Lab Tested</h4>
+                            <p>Every batch tested in certified laboratories</p>
+                        </div>
+                    </div>
+                    <div class="certification-item">
+                        <div class="cert-icon">✓</div>
+                        <div class="cert-info">
+                            <h4>Cold Chain Managed</h4>
+                            <p>Temperature controlled from farm to doorstep</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="certification-badge-grid">
+                    <div class="cert-badge">
+                        <span class="badge-icon">🎖️</span>
+                        <span>ISO 9001</span>
+                    </div>
+                    <div class="cert-badge">
+                        <span class="badge-icon">✅</span>
+                        <span>FSSAI</span>
+                    </div>
+                    <div class="cert-badge">
+                        <span class="badge-icon">🔬</span>
+                        <span>Lab Tested</span>
+                    </div>
+                    <div class="cert-badge">
+                        <span class="badge-icon">🌿</span>
+                        <span>Natural</span>
+                    </div>
+                    <div class="cert-badge">
+                        <span class="badge-icon">🚚</span>
+                        <span>Fast Delivery</span>
+                    </div>
+                    <div class="cert-badge">
+                        <span class="badge-icon">💚</span>
+                        <span>Trusted</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Subscribe & Save Program Section -->
+<section class="section subscribe-save-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">💳 Subscribe & Save Program</h2>
+            <p class="section-lead">Get regular deliveries with exclusive discounts</p>
+        </div>
+
+        <div class="row gy-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="subscription-plan" data-plan="weekly">
+                    <div class="plan-header">
+                        <h3>Weekly Plan</h3>
+                        <p class="plan-discount">Save 10%</p>
+                    </div>
+                    <div class="plan-details">
+                        <p class="plan-description">Perfect for regular consumers</p>
+                        <ul class="plan-features">
+                            <li>✓ Weekly deliveries</li>
+                            <li>✓ 10% discount</li>
+                            <li>✓ Priority support</li>
+                            <li>✓ Flexible pausing</li>
+                        </ul>
+                        <button class="btn btn-brand btn-block plan-btn" data-plan-type="weekly" data-plan-name="Weekly Plan" data-plan-discount="10">Choose Plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="subscription-plan plan-popular" data-plan="biweekly">
+                    <div class="plan-badge">Most Popular</div>
+                    <div class="plan-header">
+                        <h3>Bi-Weekly Plan</h3>
+                        <p class="plan-discount">Save 15%</p>
+                    </div>
+                    <div class="plan-details">
+                        <p class="plan-description">Best for families</p>
+                        <ul class="plan-features">
+                            <li>✓ Bi-weekly deliveries</li>
+                            <li>✓ 15% discount</li>
+                            <li>✓ Priority support</li>
+                            <li>✓ Flexible pausing</li>
+                        </ul>
+                        <button class="btn btn-accent btn-block plan-btn" data-plan-type="biweekly" data-plan-name="Bi-Weekly Plan" data-plan-discount="15">Choose Plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="subscription-plan" data-plan="monthly">
+                    <div class="plan-header">
+                        <h3>Monthly Plan</h3>
+                        <p class="plan-discount">Save 20%</p>
+                    </div>
+                    <div class="plan-details">
+                        <p class="plan-description">Maximum savings</p>
+                        <ul class="plan-features">
+                            <li>✓ Monthly deliveries</li>
+                            <li>✓ 20% discount</li>
+                            <li>✓ Priority support</li>
+                            <li>✓ Flexible pausing</li>
+                        </ul>
+                        <button class="btn btn-brand btn-block plan-btn" data-plan-type="monthly" data-plan-name="Monthly Plan" data-plan-discount="20">Choose Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="subscription-benefits">
+            <div class="text-center mt-5">
+                <h4 class="benefits-title">Benefits of Subscribe & Save</h4>
+            </div>
+            <div class="row gy-3 mt-2">
+                <div class="col-md-3 col-sm-6">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">💰</span>
+                        <p>Never miss out on discounts</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">📦</span>
+                        <p>Automatic deliveries</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">✏️</span>
+                        <p>Manage anytime</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">🎁</span>
+                        <p>Exclusive perks</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -406,6 +642,80 @@ document.addEventListener('DOMContentLoaded', function() {
             this.reset();
         });
     }
+
+    // Subscription Plan Handling
+    const planButtons = document.querySelectorAll('.plan-btn');
+    
+    planButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const planType = this.getAttribute('data-plan-type');
+            const planName = this.getAttribute('data-plan-name');
+            const planDiscount = this.getAttribute('data-plan-discount');
+            
+            // Show subscription modal/alert with plan details
+            showSubscriptionModal(planType, planName, planDiscount);
+        });
+    });
+
+    // Add hover effect to subscription plans
+    const subscriptionPlans = document.querySelectorAll('.subscription-plan');
+    subscriptionPlans.forEach(plan => {
+        plan.addEventListener('mouseenter', function() {
+            this.style.boxShadow = 'var(--shadow-strong)';
+        });
+        
+        plan.addEventListener('mouseleave', function() {
+            this.style.boxShadow = '';
+        });
+    });
+});
+
+// Subscription modal function
+function showSubscriptionModal(planType, planName, planDiscount) {
+    const message = `
+🎉 You selected: ${planName}
+💰 Discount: ${planDiscount}%
+
+This plan includes:
+✓ Regular deliveries
+✓ ${planDiscount}% discount on all orders
+✓ Priority customer support
+✓ Flexible subscription management
+✓ Exclusive member benefits
+
+To complete your subscription:
+1. Add products to cart
+2. Apply subscription during checkout
+3. Save on every order!
+
+Would you like to continue shopping?`;
+    
+    // Show alert with plan details
+    if (confirm(message + '\n\nClick OK to start shopping, or Cancel to continue browsing.')) {
+        // Redirect to products page
+        {% if user.is_authenticated %}
+            window.location.href = "{% url 'category' 'ML' %}";
+        {% else %}
+            window.location.href = "{% url 'login' %}";
+        {% endif %}
+    }
+}
+
+// Add animation to subscription plans on scroll
+window.addEventListener('scroll', function() {
+    const subscriptionPlans = document.querySelectorAll('.subscription-plan');
+    
+    subscriptionPlans.forEach(plan => {
+        const rect = plan.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (isVisible && !plan.classList.contains('animated')) {
+            plan.classList.add('animated');
+            plan.style.animation = 'bounceIn 0.6s ease-out';
+        }
+    });
 });
 </script>
 
