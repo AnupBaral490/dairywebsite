@@ -25,59 +25,144 @@
 
 {% block main-content %}
 
-<!-- Hero Section -->
+<!-- Enhanced Hero Section -->
 <section class="about-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-animated-bg">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
     <div class="container">
         <div class="about-hero-content">
-            <h1 class="about-hero-title">About Fresh Dairy</h1>
-            <p class="about-hero-subtitle">Delivering Quality Dairy Products with Love & Care Since 2018</p>
+            <span class="hero-label">
+                <svg class="hero-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+                Welcome to Fresh Dairy
+            </span>
+            <h1 class="about-hero-title">Bringing Fresh, Pure Dairy Products to Your Table</h1>
+            <p class="about-hero-subtitle">Delivering Quality Dairy Products with Love & Care Since 2018. Committed to excellence, sustainability, and empowering local farmers.</p>
+            <div class="hero-buttons">
+                <a href="#our-story" class="btn btn-hero-primary">
+                    <span>Discover Our Story</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </a>
+                <a href="{% url 'category' 'ML' %}" class="btn btn-hero-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Shop Products</span>
+                </a>
+            </div>
         </div>
+    </div>
+    <div class="hero-wave">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,48C1248,53,1344,75,1392,85.3L1440,96L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="white"/>
+        </svg>
     </div>
 </section>
 
 <!-- Company Overview Section -->
-<section class="section section-light">
+<section class="section about-story-section" id="our-story">
     <div class="container">
-        <div class="row align-items-center">
+        <div class="row align-items-center g-5">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="about-content-box">
-                    <h2 class="section-title mb-3">Our Journey</h2>
-                    <p class="about-text">Fresh Dairy is a public limited company with registered office at Pokhara City of Gandaki State in Nepal. Established in 2018 and beginning production in 2020, we've quickly become one of the fastest-growing dairy companies in the region.</p>
-                    <p class="about-text">Our commitment to quality, innovation, and ethical farming practices has earned us the trust of thousands of customers across Nepal. We believe in creating a sustainable future for farmers and communities.</p>
+                    <span class="section-badge">
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Our Journey
+                    </span>
+                    <h2 class="about-section-title">A Story of Passion, Quality & Community</h2>
+                    <p class="about-text">Fresh Dairy is a public limited company with registered office at <strong>Pokhara City of Gandaki State in Nepal</strong>. Established in <strong>2018</strong> and beginning production in <strong>2020</strong>, we've quickly become one of the fastest-growing dairy companies in the region.</p>
+                    <p class="about-text">Our commitment to quality, innovation, and ethical farming practices has earned us the trust of thousands of customers across Nepal. We believe in creating a sustainable future for farmers and communities while delivering premium dairy products to your doorstep.</p>
+                    
                     <div class="about-features">
                         <div class="feature-item">
-                            <span class="feature-icon">✓</span>
-                            <span class="feature-text">6+ Years of Excellence</span>
+                            <div class="feature-icon-box">
+                                <svg class="feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h5>8+ Years of Excellence</h5>
+                                <p>Consistently delivering quality since 2018</p>
+                            </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">✓</span>
-                            <span class="feature-text">100% Pure & Natural</span>
+                            <div class="feature-icon-box">
+                                <svg class="feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h5>100% Pure & Natural</h5>
+                                <p>No artificial additives or preservatives</p>
+                            </div>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">✓</span>
-                            <span class="feature-text">Certified Quality Standards</span>
+                            <div class="feature-icon-box">
+                                <svg class="feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h5>Certified Quality Standards</h5>
+                                <p>Meeting international safety protocols</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-6">
-                <div class="about-stats">
-                    <div class="stat-card">
-                        <div class="stat-number">10K+</div>
-                        <div class="stat-label">Happy Customers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Farmers Partners</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">20+</div>
-                        <div class="stat-label">Product Varieties</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Organic Production</div>
+                <div class="about-stats-container">
+                    <div class="about-stats">
+                        <div class="stat-card stat-card-1">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-number" data-target="10000">0</div>
+                            <div class="stat-label">Happy Customers</div>
+                            <div class="stat-bar"></div>
+                        </div>
+                        <div class="stat-card stat-card-2">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                            </div>
+                            <div class="stat-number" data-target="500">0</div>
+                            <div class="stat-label">Farmer Partners</div>
+                            <div class="stat-bar"></div>
+                        </div>
+                        <div class="stat-card stat-card-3">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                            </div>
+                            <div class="stat-number" data-target="20">0</div>
+                            <div class="stat-label">Product Varieties</div>
+                            <div class="stat-bar"></div>
+                        </div>
+                        <div class="stat-card stat-card-4">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-number">100<span class="stat-percent">%</span></div>
+                            <div class="stat-label">Organic Production</div>
+                            <div class="stat-bar"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -86,31 +171,85 @@
 </section>
 
 <!-- Mission & Vision Section -->
-<section class="section">
+<section class="section mission-vision-section">
     <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">
+                <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Our Purpose
+            </span>
+            <h2 class="section-title-main">Mission & Vision</h2>
+            <p class="section-subtitle">The guiding principles that drive everything we do</p>
+        </div>
+
         <div class="row gy-4">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="mission-vision-card mission-card">
-                    <div class="mv-icon">🎯</div>
-                    <h3>Our Mission</h3>
-                    <p>To embrace technology and innovation to delight our customers with premium quality dairy products. We are committed to empowering the farmer community through our unique 'Relationship Farming' model, ensuring fair prices and sustainable practices.</p>
+                    <div class="mv-header">
+                        <div class="mv-icon-wrapper">
+                            <svg class="mv-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            </svg>
+                        </div>
+                        <h3>Our Mission</h3>
+                    </div>
+                    <p class="mv-description">To embrace technology and innovation to delight our customers with premium quality dairy products. We are committed to empowering the farmer community through our unique 'Relationship Farming' model, ensuring fair prices and sustainable practices.</p>
                     <ul class="mv-list">
-                        <li>Deliver high-quality dairy products</li>
-                        <li>Support farmer livelihoods</li>
-                        <li>Embrace innovative technologies</li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Deliver high-quality dairy products</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Support farmer livelihoods</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Embrace innovative technologies</span>
+                        </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="mission-vision-card vision-card">
-                    <div class="mv-icon">🌟</div>
-                    <h3>Our Vision</h3>
-                    <p>To become Nepal's most trusted and sustainable dairy brand, known for quality, innovation, and social responsibility. We envision a future where every family enjoys pure, nutritious dairy products while supporting ethical farming practices.</p>
+                    <div class="mv-header">
+                        <div class="mv-icon-wrapper">
+                            <svg class="mv-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </div>
+                        <h3>Our Vision</h3>
+                    </div>
+                    <p class="mv-description">To become Nepal's most trusted and sustainable dairy brand, known for quality, innovation, and social responsibility. We envision a future where every family enjoys pure, nutritious dairy products while supporting ethical farming practices.</p>
                     <ul class="mv-list">
-                        <li>Lead the dairy industry in Nepal</li>
-                        <li>Promote sustainable agriculture</li>
-                        <li>Build lasting community relationships</li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Lead the dairy industry in Nepal</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Promote sustainable agriculture</span>
+                        </li>
+                        <li>
+                            <svg class="list-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Build lasting community relationships</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -119,57 +258,88 @@
 </section>
 
 <!-- Core Values Section -->
-<section class="section section-light">
+<section class="section section-light values-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Our Core Values</h2>
-            <p class="section-lead">These principles guide every decision we make</p>
+            <span class="section-badge">
+                <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                What We Stand For
+            </span>
+            <h2 class="section-title-main">Our Core Values</h2>
+            <p class="section-subtitle">The principles that guide every decision we make and define who we are</p>
         </div>
 
         <div class="row gy-4">
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">💚</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
                     <h4>Quality First</h4>
                     <p>We never compromise on quality. Every product undergoes rigorous testing to ensure it meets the highest standards.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">🤝</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
                     <h4>Farmer Empowerment</h4>
                     <p>We believe in fair trade practices and building long-term relationships with our farming partners for mutual growth.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">🌱</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
                     <h4>Sustainability</h4>
                     <p>We're committed to environmental responsibility and sustainable farming practices for future generations.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">🔍</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </div>
                     <h4>Transparency</h4>
                     <p>We maintain complete transparency in our operations, from farm to table, building trust with our customers.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">💡</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
                     <h4>Innovation</h4>
                     <p>Continuous improvement and modern technology drive us to deliver better products and services daily.</p>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="value-card">
-                    <div class="value-icon">❤️</div>
+                    <div class="value-icon-wrapper">
+                        <svg class="value-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
                     <h4>Customer Care</h4>
                     <p>Your satisfaction is our priority. We listen, learn, and constantly improve based on your feedback.</p>
                 </div>
@@ -179,43 +349,69 @@
 </section>
 
 <!-- Why Choose Us Section -->
-<section class="section">
+<section class="section why-choose-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Why Choose Fresh Dairy?</h2>
-            <p class="section-lead">We stand out through our commitment to excellence</p>
+            <span class="section-badge">
+                <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                </svg>
+                Our Advantages
+            </span>
+            <h2 class="section-title-main">Why Choose Fresh Dairy?</h2>
+            <p class="section-subtitle">Discover what makes us the preferred choice for quality dairy products</p>
         </div>
 
         <div class="row gy-4">
             <div class="col-md-6 col-lg-3">
                 <div class="why-choose-card">
-                    <div class="wc-icon">🥛</div>
+                    <div class="wc-icon-wrapper">
+                        <svg class="wc-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
                     <h4>Pure & Natural</h4>
                     <p>100% pure dairy products with no artificial additives or preservatives. Just nature's goodness.</p>
+                    <div class="wc-badge">Certified</div>
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-3">
                 <div class="why-choose-card">
-                    <div class="wc-icon">✅</div>
+                    <div class="wc-icon-wrapper">
+                        <svg class="wc-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
                     <h4>Quality Certified</h4>
                     <p>All products meet international quality and safety standards for your peace of mind.</p>
+                    <div class="wc-badge">ISO Certified</div>
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-3">
                 <div class="why-choose-card">
-                    <div class="wc-icon">🚚</div>
+                    <div class="wc-icon-wrapper">
+                        <svg class="wc-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                        </svg>
+                    </div>
                     <h4>Fresh Delivery</h4>
                     <p>Direct from farm to doorstep with cold chain management ensuring freshness every time.</p>
+                    <div class="wc-badge">Fast & Fresh</div>
                 </div>
             </div>
 
             <div class="col-md-6 col-lg-3">
                 <div class="why-choose-card">
-                    <div class="wc-icon">💰</div>
+                    <div class="wc-icon-wrapper">
+                        <svg class="wc-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
                     <h4>Fair Pricing</h4>
                     <p>Competitive prices without compromising on quality. Great value for your family's health.</p>
+                    <div class="wc-badge">Best Value</div>
                 </div>
             </div>
         </div>
@@ -224,16 +420,86 @@
 
 <!-- CTA Section -->
 <section class="about-cta">
+    <div class="cta-pattern-bg"></div>
     <div class="container">
         <div class="cta-content">
+            <div class="cta-icon-wrapper">
+                <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+            </div>
             <h2>Join Our Growing Community</h2>
-            <p>Experience the freshness and quality that Fresh Dairy brings to your table</p>
+            <p>Experience the freshness and quality that Fresh Dairy brings to your table. Become part of a movement that supports local farmers and sustainable agriculture.</p>
             <div class="cta-buttons">
-                <a href="{% url 'category' 'ML' %}" class="btn btn-brand">Shop Now</a>
-                <a href="{% url 'contact' %}" class="btn btn-outline-brand">Contact Us</a>
+                <a href="{% url 'category' 'ML' %}" class="btn btn-cta-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span>Shop Now</span>
+                </a>
+                <a href="{% url 'contact' %}" class="btn btn-cta-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Contact Us</span>
+                </a>
             </div>
         </div>
     </div>
 </section>
+
+<script>
+// Animated counter for statistics
+document.addEventListener('DOMContentLoaded', function() {
+    const statCards = document.querySelectorAll('.stat-number[data-target]');
+    
+    const animateCounter = (element, target, duration = 2000) => {
+        const start = 0;
+        const increment = target / (duration / 16);
+        let current = start;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                element.textContent = target >= 1000 ? (target / 1000).toFixed(0) + 'K+' : target + '+';
+                clearInterval(timer);
+            } else {
+                element.textContent = Math.floor(current >= 1000 ? current / 1000 : current) + (current >= 1000 ? 'K' : '');
+            }
+        }, 16);
+    };
+    
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                entry.target.classList.add('animated');
+                const target = parseInt(entry.target.dataset.target);
+                animateCounter(entry.target, target);
+            }
+        });
+    }, observerOptions);
+    
+    statCards.forEach(card => observer.observe(card));
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href !== '#' && document.querySelector(href)) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
 
 {% endblock main-content %}
