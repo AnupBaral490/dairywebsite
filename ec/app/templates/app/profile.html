@@ -4,46 +4,63 @@
 
 {% block main-content %}
 
-<div class="container my-5">
-    <div class="row">
-        <h3>Welcome <span class="text-capitalize">{{ request.user }}</span></h3>
-        
-        <div class="col-sm-2 border-end">
-            <ul class="list-unstyled">
-                <li class="d-grid"><a href="{% url 'profile' %}" class="btn btn-primary">Profile</a></li>
-                <li class="d-grid"><a href="{% url 'address' %}" class="btn">Address</a></li>
-                <li class="d-grid"><a href="{% url 'loyalty' %}" class="btn" style="background: linear-gradient(135deg, #268959 0%, #0a9f6e 100%); color: white; border: none;">🎖️ Loyalty</a></li>
-                <li class="d-grid"><a href="{% url 'my-rewards' %}" class="btn" style="background: linear-gradient(135deg, #f59f4a 0%, #e07b39 100%); color: white; border: none;">🎁 My Rewards</a></li>
-            </ul>
-
+<section class="section profile-section">
+    <div class="container">
+        <div class="profile-welcome mb-4">
+            <h3 class="mb-0">Welcome <span class="text-capitalize">{{ request.user }}</span></h3>
+            <p class="text-muted mb-0">Complete your profile details for faster checkout.</p>
         </div>
 
-        <div class="col-sm-8 offset-sm-1">
-            <form action="" method="post">
-                {% csrf_token %}
-                {% for fm in form %}
-                {{ fm.label_tag }} {{ fm }} <small class="text-danger">{{ fm.errors|striptags }}</small> <br>
-                {% endfor %}
-                <div class="col-12 mt-3">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-3">
+                <div class="profile-menu card-soft">
+                    <ul class="list-unstyled mb-0">
+                        <li class="d-grid mb-2"><a href="{% url 'profile' %}" class="btn btn-primary">Profile</a></li>
+                        <li class="d-grid mb-2"><a href="{% url 'address' %}" class="btn btn-outline-secondary">Address</a></li>
+                        <li class="d-grid mb-2"><a href="{% url 'loyalty' %}" class="btn profile-loyalty-btn">🎖️ Loyalty</a></li>
+                        <li class="d-grid"><a href="{% url 'my-rewards' %}" class="btn profile-reward-btn">🎁 My Rewards</a></li>
+                    </ul>
                 </div>
-                {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                <p class="alert alert-danger my-3">{{ error }}</p>
-                {% endfor %}
-                {% endif %}
+            </div>
 
-                {% if messages %}
-                {% for msg in messages %}
-                <div class="alert alert-{{ msg.tags }}" role="alert">
-                    {{ msg }}
+            <div class="col-12 col-lg-9">
+                <div class="profile-form-wrap card-soft">
+                    <form action="" method="post" class="row g-3">
+                        {% csrf_token %}
+                        {% for fm in form %}
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold">{{ fm.label }}</label>
+                            {{ fm }}
+                            <small class="text-danger d-block mt-1">{{ fm.errors|striptags }}</small>
+                        </div>
+                        {% endfor %}
+
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-brand profile-submit-btn">Save Profile</button>
+                        </div>
+
+                        {% if form.non_field_errors %}
+                        <div class="col-12">
+                            {% for error in form.non_field_errors %}
+                            <p class="alert alert-danger my-1">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if messages %}
+                        <div class="col-12">
+                            {% for msg in messages %}
+                            <div class="alert alert-{{ msg.tags }} mb-2" role="alert">
+                                {{ msg }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </form>
                 </div>
-                {% endfor %}
-                {% endif %}
-            </form>
-
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 {% endblock main-content %}

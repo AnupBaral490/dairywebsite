@@ -1,7 +1,7 @@
 from django.urls import path
 from .import views
 from django.contrib.auth import views as auth_view
-from .forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MySetPasswordForm
+from .forms import MyPasswordResetForm, MyPasswordChangeForm, MySetPasswordForm
 from django.urls import reverse_lazy
 
 
@@ -35,7 +35,7 @@ urlpatterns = [
     path('minuswishlist/', views.minus_wishlist),
     #login authentication
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
-    path('accounts/login/', auth_view.LoginView.as_view(template_name='app/login.html', authentication_form=LoginForm) , name='login'),
+    path('accounts/login/', views.UserLoginView.as_view(), name='login'),
     path(
         'passwordchange/',
         auth_view.PasswordChangeView.as_view(template_name='app/changepassword.html',success_url=reverse_lazy('passwordchangedone')

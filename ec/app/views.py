@@ -4,7 +4,7 @@ from . models import Product, Cart, OrderPlaced, Wishlist, ProductVariant, Produ
 from django.db.models import Count, Avg
 from django.contrib import messages
 from .models import ContactMessage
-from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer, ProductReviewForm, FarmerMessageForm
+from . forms import CustomerRegistrationForm, CustomerProfileForm, Customer, ProductReviewForm, FarmerMessageForm, LoginForm
 from django.http import JsonResponse
 from django.db.models import Q
 import razorpay
@@ -15,6 +15,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import CustomerLoyalty, LoyaltyTier, RewardTransaction, Reward, RedeemHistory
 from django.utils import timezone
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
 
 # Create your views here.
 def home(request):
@@ -158,6 +160,14 @@ class CustomerRegistrationView(View):
         else:
             messages.warning(request, "Invalid Input Data")
         return render(request, "app/customerregistration.html",locals())
+
+
+class UserLoginView(LoginView):
+    template_name = 'app/login.html'
+    authentication_form = LoginForm
+
+    def get_success_url(self):
+        return reverse_lazy('profile')
     
 class ProfileView(View):
     def get(self, request):

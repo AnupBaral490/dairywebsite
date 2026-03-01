@@ -303,6 +303,68 @@ a {
 	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* Profile Section */
+.profile-section {
+	padding: 64px 0;
+}
+
+.profile-welcome {
+	background: linear-gradient(135deg, rgba(42, 165, 107, 0.08) 0%, rgba(245, 159, 74, 0.08) 100%);
+	border: 1px solid var(--border-200);
+	border-radius: 16px;
+	padding: 16px 20px;
+}
+
+.profile-menu {
+	padding: 16px;
+	position: sticky;
+	top: 96px;
+}
+
+.profile-menu .btn {
+	padding: 10px 14px;
+	font-weight: 600;
+	border-radius: 10px;
+}
+
+.profile-loyalty-btn {
+	background: linear-gradient(135deg, #268959 0%, #0a9f6e 100%);
+	color: white;
+	border: none;
+}
+
+.profile-loyalty-btn:hover {
+	color: white;
+	opacity: 0.95;
+}
+
+.profile-reward-btn {
+	background: linear-gradient(135deg, #f59f4a 0%, #e07b39 100%);
+	color: white;
+	border: none;
+}
+
+.profile-reward-btn:hover {
+	color: white;
+	opacity: 0.95;
+}
+
+.profile-form-wrap {
+	padding: 22px;
+}
+
+.profile-form-wrap .form-control,
+.profile-form-wrap .form-select {
+	min-height: 46px;
+	border-radius: 10px;
+}
+
+.profile-submit-btn {
+	padding: 12px 26px;
+	border-radius: 12px;
+	font-weight: 600;
+}
+
 /* Quality Badge Styling */
 .quality-badge {
 	display: inline-flex;
@@ -3665,6 +3727,10 @@ textarea.form-control {
 		height: 350px;
 	}
 
+	.profile-menu {
+		position: static;
+	}
+
 	.section {
 		padding: 60px 0;
 	}
@@ -3698,6 +3764,18 @@ textarea.form-control {
 @media (max-width: 768px) {
 	.hero-carousel .carousel-item img {
 		height: 280px;
+	}
+
+	.profile-section {
+		padding: 48px 0;
+	}
+
+	.profile-welcome {
+		padding: 14px 16px;
+	}
+
+	.profile-form-wrap {
+		padding: 16px;
 	}
 
 	.contact-hero {
