@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Product, ProductVariant, ProductReview, Farmer, FarmerMessage
+from . models import Product, ProductVariant, ProductReview, Farmer, FarmerMessage, BulkDiscount
 from .models import ContactMessage
 from .models import Customer
 from .models import Cart
@@ -18,6 +18,23 @@ class ProductVariantModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'product', 'pack_size_value', 'pack_size_unit', 'discounted_price', 'stock', 'is_default']
     list_filter = ['pack_size_unit', 'is_default']
     search_fields = ['product__title']
+
+
+@admin.register(BulkDiscount)
+class BulkDiscountModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'product', 'min_quantity', 'discount_percentage', 'is_active', 'created_at']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['product__title']
+    list_editable = ['is_active']
+    ordering = ['product', 'min_quantity']
+    fieldsets = (
+        ('Product & Quantity', {
+            'fields': ('product', 'min_quantity'),
+        }),
+        ('Discount Settings', {
+            'fields': ('discount_percentage', 'is_active'),
+        }),
+    )
 
 
 @admin.register(ContactMessage)

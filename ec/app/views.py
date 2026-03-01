@@ -112,6 +112,9 @@ class ProductDetail(View):
 
         recommended_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
+        # Get bulk discounts for this product
+        bulk_discounts = product.bulk_discounts.filter(is_active=True).order_by('min_quantity')
+
         return render(request, "app/productdetail.html", {
             'product': product,
             'wishlist': wishlist,
@@ -125,6 +128,7 @@ class ProductDetail(View):
             'farmer_form': FarmerMessageForm(),
             'recent_products': recent_products,
             'recommended_products': recommended_products,
+            'bulk_discounts': bulk_discounts,
         })
     
 
@@ -239,10 +243,10 @@ def show_cart(request):
     user = request.user
     cart = Cart.objects.filter(user=user)
     amount = 0
+    total_savings = 0
     for p in cart:
-        unit_price = p.variant.discounted_price if p.variant else p.product.discounted_price
-        value = p.quantity * unit_price
-        amount = amount + value
+        amount = amount + p.total_cost
+        total_savings = total_savings + p.savings
     shipping = 40 if amount > 0 else 0
     totalamount = amount + shipping
     
@@ -257,8 +261,7 @@ class checkout(View):
 
         famount = 0
         for p in cart_items:
-            unit_price = p.variant.discounted_price if p.variant else p.product.discounted_price
-            famount += p.quantity * unit_price
+            famount += p.total_cost
 
         totalamount = famount + 40
         razoramount = int(totalamount * 100)  # in paise

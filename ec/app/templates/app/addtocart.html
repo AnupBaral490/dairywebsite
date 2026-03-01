@@ -22,15 +22,27 @@
                                 <p class="mb-2 text-muted small">Pack Size: {{ item.variant.pack_size_label }}</p>
                                 {% endif %}
                                 <p class="mb-2 text-muted small">{{ item.product.description }}</p>
+                                {% if item.bulk_discount %}
+                                <div class="alert alert-success py-1 mb-2">
+                                    <small><i class="fas fa-tag"></i> <strong>Bulk Discount Applied!</strong> {{ item.bulk_discount.discount_percentage }}% off for {{ item.bulk_discount.min_quantity }}+ items</small>
+                                </div>
+                                {% endif %}
                                 <div class="my-3">
                                     <label for="quantity">Quantity:</label>
                                     <a class="minus-cart btn" cart_id="{{ item.id }}"><i class="fas fa-minus-square fa-lg"></i></a>
                                     <span class="quantity">{{ item.quantity }}</span>
                                     <a class="plus-cart btn" cart_id={{ item.id }}><i class="fas fa-plus-square fa-lg"></i></a>
                                 </div>
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <a href="#" class="remove-cart btn btn-sm btn-secondary mr-3" cart_id={{ item.id }}>Remove item</a>
-                                    <p class="mb-0"><span><strong>Rs. {{ item.variant.discounted_price|default:item.product.discounted_price }}</strong></span></p>
+                                    <div class="text-right">
+                                        {% if item.savings > 0 %}
+                                        <p class="mb-0 text-muted"><small>Unit Price: <s>Rs. {{ item.unit_price|floatformat:2 }}</s></small></p>
+                                        <p class="mb-0"><span><strong>Total: Rs. {{ item.total_cost|floatformat:2 }}</strong> <span class="text-success small">(Saved Rs. {{ item.savings|floatformat:2 }})</span></span></p>
+                                        {% else %}
+                                        <p class="mb-0"><span><strong>Total: Rs. {{ item.total_cost|floatformat:2 }}</strong></span></p>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -47,6 +59,12 @@
                     <h3>The Total Amount of</h3>
                     <ul class="list-group">
                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Amount<span id="amount">Rs.{{ amount }}</span></li>
+                        {% if total_savings > 0 %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 text-success">
+                            <span><i class="fas fa-tag"></i> Bulk Discount Savings</span>
+                            <span>-Rs.{{ total_savings|floatformat:2 }}</span>
+                        </li>
+                        {% endif %}
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">Shipping<span id="shippingamount">Rs.{{ shipping }}</span></li>
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <div>

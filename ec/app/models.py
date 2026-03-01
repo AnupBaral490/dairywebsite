@@ -73,6 +73,31 @@ class ProductVariant(models.Model):
 
     def pack_size_label(self):
         return f"{self.pack_size_value}{self.get_pack_size_unit_display()}"
+
+
+class BulkDiscount(models.Model):
+    """Bulk order discount tiers for products"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='bulk_discounts')
+    min_quantity = models.PositiveIntegerField(help_text="Minimum quantity to qualify")
+    discount_percentage = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Discount percentage (0-100)"
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['product', 'min_quantity']
+        unique_together = ('product', 'min_quantity')
+
+    def __str__(self):
+        return f"{self.product.title} - {self.min_quantity}+ units = {self.discount_percentage}% off"
+
+    def calculate_discount(self, unit_price, quantity):
+        """Calculate the discount amount for given quantity"""
+        if quantity >= self.min_quantity:
+            return unit_price * (self.discount_percentage / 100)
+        return 0
     
 
 class ContactMessage(models.Model):
@@ -105,9 +130,37 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     @property
+    def unit_price(self):
+        """Get the base unit price"""
+        return self.variant.discounted_price if self.variant else self.product.discounted_price
+
+    @property
+    def bulk_discount(self):
+        """Get applicable bulk discount for this cart item"""
+        discounts = self.product.bulk_discounts.filter(
+            is_active=True,
+            min_quantity__lte=self.quantity
+        ).order_by('-min_quantity')
+        return discounts.first() if discounts.exists() else None
+
+    @property
+    def bulk_discount_amount(self):
+        """Calculate total bulk discount amount"""
+        discount = self.bulk_discount
+        if discount:
+            return discount.calculate_discount(self.unit_price, self.quantity) * self.quantity
+        return 0
+
+    @property
     def total_cost(self):
-        unit_price = self.variant.discounted_price if self.variant else self.product.discounted_price
-        return self.quantity * unit_price
+        """Calculate total cost after bulk discount"""
+        base_cost = self.quantity * self.unit_price
+        return base_cost - self.bulk_discount_amount
+
+    @property
+    def savings(self):
+        """Calculate total savings from bulk discount"""
+        return self.bulk_discount_amount
     
 STATUS_CHOICES = (
     ('Accepted','Accepted'),
