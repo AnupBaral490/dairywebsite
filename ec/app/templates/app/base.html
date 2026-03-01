@@ -109,7 +109,7 @@
 {% block main-content %}{% endblock main-content %}
 {% block payment-gateway %}{% endblock payment-gateway %}
 
-<!-- Minimal Modern Footer -->
+<!-- Premium Modern Footer -->
 <footer class="minimal-footer">
   <div class="footer-content">
     <div class="container-fluid">
@@ -117,63 +117,89 @@
         <!-- Brand Column -->
         <div class="footer-col footer-brand-col">
           <div class="footer-brand">
-            <img src="{% static "app/images/product/Neel.png" %}" alt="Fresh Dairy" class="footer-logo-img" />
-            <h5>Fresh Dairy</h5>
+            <div class="footer-logo-wrapper">
+              <img src="{% static "app/images/product/Neel.png" %}" alt="Fresh Dairy" class="footer-logo-img" />
+            </div>
+            <div>
+              <h5 class="footer-brand-name">Fresh Dairy</h5>
+              <p class="footer-tagline">Pure. Fresh. Trusted.</p>
+            </div>
           </div>
-          <p class="footer-tagline">Pure. Fresh. Trusted.</p>
+          <p class="footer-description">Delivering quality dairy products to your doorstep with care and excellence.</p>
         </div>
 
-        <!-- Links Column -->
+        <!-- Explore Column -->
         <div class="footer-col">
-          <h6 class="footer-col-title">Explore</h6>
+          <h6 class="footer-col-title">
+            <span class="title-text">Explore</span>
+            <span class="title-underline"></span>
+          </h6>
           <ul class="footer-links-list">
-            <li><a href="/">Home</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
-            <li><a href="{% url 'category' 'ML' %}">Shop</a></li>
+            <li><a href="/" class="footer-link"><span class="link-icon">🏠</span>Home</a></li>
+            <li><a href="{% url 'about' %}" class="footer-link"><span class="link-icon">ℹ️</span>About</a></li>
+            <li><a href="{% url 'contact' %}" class="footer-link"><span class="link-icon">💬</span>Contact</a></li>
+            <li><a href="{% url 'category' 'ML' %}" class="footer-link"><span class="link-icon">🛒</span>Shop</a></li>
           </ul>
         </div>
 
         <!-- Account Column -->
         <div class="footer-col">
-          <h6 class="footer-col-title">Account</h6>
+          <h6 class="footer-col-title">
+            <span class="title-text">Account</span>
+            <span class="title-underline"></span>
+          </h6>
           <ul class="footer-links-list">
             {% if request.user.is_authenticated %}
-            <li><a href="{% url 'profile' %}">Profile</a></li>
-            <li><a href="{% url 'orders' %}">Orders</a></li>
-            <li><a href="{% url 'loyalty' %}">Loyalty</a></li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{% url 'profile' %}" class="footer-link"><span class="link-icon">👤</span>Profile</a></li>
+            <li><a href="{% url 'orders' %}" class="footer-link"><span class="link-icon">📦</span>Orders</a></li>
+            <li><a href="{% url 'loyalty' %}" class="footer-link"><span class="link-icon">⭐</span>Loyalty</a></li>
+            <li><a href="{% url 'logout' %}" class="footer-link"><span class="link-icon">🚪</span>Logout</a></li>
             {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
-            <li><a href="{% url 'customerregistration' %}">Register</a></li>
+            <li><a href="{% url 'login' %}" class="footer-link"><span class="link-icon">🔐</span>Login</a></li>
+            <li><a href="{% url 'customerregistration' %}" class="footer-link"><span class="link-icon">✍️</span>Register</a></li>
             {% endif %}
           </ul>
         </div>
 
         <!-- Contact & Social Column -->
         <div class="footer-col footer-contact-col">
-          <h6 class="footer-col-title">Connect</h6>
+          <h6 class="footer-col-title">
+            <span class="title-text">Connect</span>
+            <span class="title-underline"></span>
+          </h6>
           <div class="footer-contact-info">
-            <p><strong class="contact-icon">📞</strong> +1 (555) 123-4567</p>
-            <p><strong class="contact-icon">✉️</strong> info@freshdairy.com</p>
+            <div class="contact-item">
+              <span class="contact-label">📞 Phone</span>
+              <p>+1 (555) 123-4567</p>
+            </div>
+            <div class="contact-item">
+              <span class="contact-label">✉️ Email</span>
+              <p>info@freshdairy.com</p>
+            </div>
           </div>
-          <div class="footer-social-icons">
-            <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <div class="social-section">
+            <p class="social-label">Follow Us</p>
+            <div class="footer-social-icons">
+              <a href="#" title="Facebook" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" title="Twitter" class="social-icon"><i class="fab fa-twitter"></i></a>
+              <a href="#" title="Instagram" class="social-icon"><i class="fab fa-instagram"></i></a>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Divider -->
+      <div class="footer-divider"></div>
 
       <!-- Footer Bottom -->
       <div class="footer-bottom-bar">
         <p class="footer-copyright">&copy; 2025 Fresh Dairy. All rights reserved.</p>
         <div class="footer-legal-links">
-          <a href="#">Privacy</a>
+          <a href="#" class="legal-link">Privacy Policy</a>
           <span class="divider">•</span>
-          <a href="#">Terms</a>
+          <a href="#" class="legal-link">Terms of Service</a>
           <span class="divider">•</span>
-          <a href="#">Cookies</a>
+          <a href="#" class="legal-link">Cookie Settings</a>
         </div>
       </div>
     </div>
