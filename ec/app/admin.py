@@ -5,6 +5,7 @@ from .models import Customer
 from .models import Cart
 from . models import Payment, OrderPlaced, Wishlist
 from .models import LoyaltyTier, CustomerLoyalty, RewardTransaction, Reward, RedeemHistory
+from .models import FAQCategory, FAQ, HelpArticle, LiveChatMessage
 # Register your models here.
 
 @admin.register(Product)
@@ -165,3 +166,96 @@ class RedeemHistoryAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False  # Redemptions created when user redeems
     search_fields = ['farmer__farm_name', 'user__username', 'subject']
+
+
+# FAQ & Help Center Admin
+
+@admin.register(FAQCategory)
+class FAQCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'order', 'is_active', 'faq_count']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['name', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+    list_editable = ['order', 'is_active']
+    
+    def faq_count(self, obj):
+        return obj.faqs.count()
+    faq_count.short_description = 'Number of FAQs'
+
+
+@admin.register(FAQ)
+class FAQAdmin(admin.ModelAdmin):
+    list_display = ['question', 'category', 'order', 'is_featured', 'is_active', 'views', 'helpful_count']
+    list_filter = ['category', 'is_featured', 'is_active', 'created_at']
+    search_fields = ['question', 'answer']
+    list_editable = ['order', 'is_featured', 'is_active']
+    readonly_fields = ['views', 'helpful_count', 'not_helpful_count', 'created_at', 'updated_at']
+    fieldsets = (
+        ('Question & Answer', {
+            'fields': ('category', 'question', 'answer'),
+        }),
+        ('Display Settings', {
+            'fields': ('order', 'is_featured', 'is_active'),
+        }),
+        ('Statistics', {
+            'fields': ('views', 'helpful_count', 'not_helpful_count'),
+            'classes': ('collapse',),
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+
+
+@admin.register(HelpArticle)
+class HelpArticleAdmin(admin.ModelAdmin):
+    list_display = ['title', 'category', 'author', 'is_published', 'is_featured', 'views', 'created_at']
+    list_filter = ['category', 'is_published', 'is_featured', 'created_at']
+    search_fields = ['title', 'content', 'summary', 'tags']
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ['is_published', 'is_featured']
+    readonly_fields = ['views', 'helpful_count', 'not_helpful_count', 'created_at', 'updated_at']
+    fieldsets = (
+        ('Article Information', {
+            'fields': ('title', 'slug', 'category', 'author'),
+        }),
+        ('Content', {
+            'fields': ('summary', 'content', 'featured_image'),
+        }),
+        ('Tags & Categories', {
+            'fields': ('tags',),
+        }),
+        ('Publication Settings', {
+            'fields': ('is_published', 'is_featured'),
+        }),
+        ('Statistics', {
+            'fields': ('views', 'helpful_count', 'not_helpful_count'),
+            'classes': ('collapse',),
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+
+
+@admin.register(LiveChatMessage)
+class LiveChatMessageAdmin(admin.ModelAdmin):
+    list_display = ['get_sender', 'message_preview', 'is_staff_message', 'is_read', 'created_at']
+    list_filter = ['is_staff_message', 'is_read', 'created_at']
+    search_fields = ['name', 'email', 'message', 'user__username']
+    readonly_fields = ['session_id', 'user', 'name', 'email', 'created_at']
+    
+    def get_sender(self, obj):
+        if obj.user:
+            return obj.user.username
+        return obj.name or obj.email or "Anonymous"
+    get_sender.short_description = 'Sender'
+    
+    def message_preview(self, obj):
+        return obj.message[:50] + '...' if len(obj.message) > 50 else obj.message
+    message_preview.short_description = 'Message'
+    
+    def has_add_permission(self, request):
+        return True  # Allow staff to send messages

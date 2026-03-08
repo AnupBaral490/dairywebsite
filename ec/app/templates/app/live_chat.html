@@ -1,0 +1,252 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Live Chat Support{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Chat Header -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-headset fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0">💬 Live Chat Support</h4>
+                            <small>We typically reply within minutes</small>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-success">
+                                <i class="fas fa-circle"></i> Online
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div class="card-body" id="chatMessagesArea" style="height: 500px; overflow-y: auto; background-color: #f8f9fa;">
+                    {% if chat_messages %}
+                        {% for msg in chat_messages %}
+                        <div class="chat-message {% if msg.is_staff_message %}staff-message{% else %}user-message{% endif %} mb-3" data-message-id="{{ msg.id }}">
+                            <div class="{% if msg.is_staff_message %}text-start{% else %}text-end{% endif %}">
+                                <div class="d-inline-block p-3 rounded shadow-sm {% if msg.is_staff_message %}bg-white{% else %}bg-primary text-white{% endif %}" style="max-width: 75%;">
+                                    {% if msg.is_staff_message %}
+                                    <div class="fw-bold small mb-1">
+                                        <i class="fas fa-user-tie"></i> Support Team
+                                    </div>
+                                    {% endif %}
+                                    <div>{{ msg.message }}</div>
+                                    <div class="small {% if msg.is_staff_message %}text-muted{% else %}text-white-50{% endif %} mt-1">
+                                        {{ msg.created_at|date:"H:i" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-comments fa-3x mb-3 opacity-50"></i>
+                        <p>Start a conversation with our support team!</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="card-footer bg-white">
+                    {% if not user.is_authenticated %}
+                    <!-- Guest User Info Form -->
+                    <div id="guestInfoForm" class="mb-3">
+                        <div class="alert alert-info small mb-2">
+                            <i class="fas fa-info-circle"></i> Please provide your contact details before chatting
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-sm" id="guestName" placeholder="Your Name">
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" class="form-control form-control-sm" id="guestEmail" placeholder="Your Email">
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Message Input Form -->
+                    <form id="chatForm">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="messageInput" 
+                                   placeholder="Type your message..." autocomplete="off" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-paper-plane"></i> Send
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-2">
+                        <small class="text-muted">
+                            <i class="fas fa-lock"></i> Your conversation is secure and private
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Links -->
+            <div class="text-center mt-4">
+                <p class="text-muted">Looking for something else?</p>
+                <div class="d-flex gap-2 justify-content-center flex-wrap">
+                    <a href="{% url 'faq-center' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-question-circle"></i> FAQs
+                    </a>
+                    <a href="{% url 'help-center' %}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-book"></i> Help Center
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-envelope"></i> Email Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#chatMessagesArea {
+    scroll-behavior: smooth;
+}
+
+.chat-message {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    text-align: right;
+}
+
+.staff-message {
+    text-align: left;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('messageInput');
+    const chatMessagesArea = document.getElementById('chatMessagesArea');
+    const guestName = document.getElementById('guestName');
+    const guestEmail = document.getElementById('guestEmail');
+    
+    // Auto-scroll to bottom
+    function scrollToBottom() {
+        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+    }
+    
+    // Initial scroll
+    scrollToBottom();
+    
+    // Handle message submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const message = messageInput.value.trim();
+        if (!message) return;
+        
+        // For guest users, validate contact info
+        {% if not user.is_authenticated %}
+        const name = guestName ? guestName.value.trim() : '';
+        const email = guestEmail ? guestEmail.value.trim() : '';
+        
+        if (!name || !email) {
+            alert('Please provide your name and email');
+            return;
+        }
+        {% endif %}
+        
+        const formData = new FormData();
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        formData.append('message', message);
+        
+        {% if not user.is_authenticated %}
+        formData.append('name', name);
+        formData.append('email', email);
+        {% endif %}
+        
+        // Send message
+        fetch('{% url "live-chat" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Add message to chat
+                addMessageToChat(message, false);
+                messageInput.value = '';
+                
+                // Hide guest info form after first message
+                {% if not user.is_authenticated %}
+                const guestForm = document.getElementById('guestInfoForm');
+                if (guestForm) {
+                    guestForm.style.display = 'none';
+                }
+                {% endif %}
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    
+    // Add message to chat UI
+    function addMessageToChat(message, isStaff) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${isStaff ? 'staff-message' : 'user-message'} mb-3`;
+        
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                     now.getMinutes().toString().padStart(2, '0');
+        
+        messageDiv.innerHTML = `
+            <div class="${isStaff ? 'text-start' : 'text-end'}">
+                <div class="d-inline-block p-3 rounded shadow-sm ${isStaff ? 'bg-white' : 'bg-primary text-white'}" style="max-width: 75%;">
+                    ${isStaff ? '<div class="fw-bold small mb-1"><i class="fas fa-user-tie"></i> Support Team</div>' : ''}
+                    <div>${message}</div>
+                    <div class="small ${isStaff ? 'text-muted' : 'text-white-50'} mt-1">${time}</div>
+                </div>
+            </div>
+        `;
+        
+        chatMessagesArea.appendChild(messageDiv);
+        scrollToBottom();
+    }
+    
+    // Poll for new messages every 3 seconds
+    let lastMessageId = {{ chat_messages.last.id|default:0 }};
+    
+    setInterval(function() {
+        fetch(`{% url 'live-chat-messages' %}?last_id=${lastMessageId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.messages.forEach(msg => {
+                    addMessageToChat(msg.message, msg.is_staff);
+                    lastMessageId = msg.id;
+                });
+            })
+            .catch(error => console.error('Error polling messages:', error));
+    }, 3000);
+});
+</script>
+{% endblock main-content %}

@@ -14,6 +14,7 @@ from .models import Payment
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import CustomerLoyalty, LoyaltyTier, RewardTransaction, Reward, RedeemHistory
+from .models import FAQCategory, FAQ, HelpArticle, LiveChatMessage
 from django.utils import timezone
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -742,6 +743,242 @@ def my_rewards(request):
     }
     
     return render(request, 'app/my_rewards.html', context)
+
+
+# FAQ & Help Center Views
+
+def faq_center(request):
+    """Main FAQ page with categories and search"""
+    search_query = request.GET.get('q', '').strip()
+    category_slug = request.GET.get('category', '')
     
+    # Get all active categories
+    categories = FAQCategory.objects.filter(is_active=True)
     
+    # Filter FAQs
+    faqs = FAQ.objects.filter(is_active=True)
+    
+    if search_query:
+        faqs = faqs.filter(
+            Q(question__icontains=search_query) | 
+            Q(answer__icontains=search_query)
+        )
+    
+    if category_slug:
+        faqs = faqs.filter(category__slug=category_slug)
+    
+    # Get featured FAQs if no search/filter
+    featured_faqs = None
+    if not search_query and not category_slug:
+        featured_faqs = FAQ.objects.filter(is_active=True, is_featured=True)[:5]
+    
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    
+    context = {
+        'categories': categories,
+        'faqs': faqs,
+        'featured_faqs': featured_faqs,
+        'search_query': search_query,
+        'selected_category': category_slug,
+        'totalitem': totalitem,
+    }
+    
+    return render(request, 'app/faq_center.html', context)
+
+
+def faq_detail(request, faq_id):
+    """View single FAQ with helpful feedback"""
+    faq = get_object_or_404(FAQ, id=faq_id, is_active=True)
+    faq.increment_view()
+    
+    # Handle helpful feedback
+    if request.method == 'POST' and request.user.is_authenticated:
+        feedback = request.POST.get('feedback')
+        if feedback == 'helpful':
+            faq.helpful_count += 1
+            faq.save()
+            messages.success(request, "Thank you for your feedback!")
+        elif feedback == 'not_helpful':
+            faq.not_helpful_count += 1
+            faq.save()
+            messages.info(request, "Thanks for letting us know. We'll improve this answer.")
+        return redirect('faq-detail', faq_id=faq.id)
+    
+    # Get related FAQs
+    related_faqs = FAQ.objects.filter(
+        category=faq.category, 
+        is_active=True
+    ).exclude(id=faq.id)[:3]
+    
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    
+    context = {
+        'faq': faq,
+        'related_faqs': related_faqs,
+        'totalitem': totalitem,
+    }
+    
+    return render(request, 'app/faq_detail.html', context)
+
+
+def help_center(request):
+    """Help center with articles"""
+    search_query = request.GET.get('q', '').strip()
+    category_slug = request.GET.get('category', '')
+    tag = request.GET.get('tag', '')
+    
+    # Get published articles
+    articles = HelpArticle.objects.filter(is_published=True)
+    
+    if search_query:
+        articles = articles.filter(
+            Q(title__icontains=search_query) | 
+            Q(content__icontains=search_query) |
+            Q(summary__icontains=search_query) |
+            Q(tags__icontains=search_query)
+        )
+    
+    if category_slug:
+        articles = articles.filter(category__slug=category_slug)
+    
+    if tag:
+        articles = articles.filter(tags__icontains=tag)
+    
+    # Get featured articles
+    featured_articles = None
+    if not search_query and not category_slug and not tag:
+        featured_articles = HelpArticle.objects.filter(
+            is_published=True, 
+            is_featured=True
+        )[:3]
+    
+    # Get categories
+    categories = FAQCategory.objects.filter(is_active=True)
+    
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    
+    context = {
+        'articles': articles,
+        'featured_articles': featured_articles,
+        'categories': categories,
+        'search_query': search_query,
+        'selected_category': category_slug,
+        'selected_tag': tag,
+        'totalitem': totalitem,
+    }
+    
+    return render(request, 'app/help_center.html', context)
+
+
+def help_article_detail(request, slug):
+    """View single help article"""
+    article = get_object_or_404(HelpArticle, slug=slug, is_published=True)
+    article.increment_view()
+    
+    # Handle helpful feedback
+    if request.method == 'POST' and request.user.is_authenticated:
+        feedback = request.POST.get('feedback')
+        if feedback == 'helpful':
+            article.helpful_count += 1
+            article.save()
+            messages.success(request, "Glad we could help!")
+        elif feedback == 'not_helpful':
+            article.not_helpful_count += 1
+            article.save()
+            messages.info(request, "We appreciate your feedback and will improve this article.")
+        return redirect('help-article-detail', slug=article.slug)
+    
+    # Get related articles
+    related_articles = HelpArticle.objects.filter(
+        is_published=True
+    ).exclude(id=article.id)
+    
+    if article.category:
+        related_articles = related_articles.filter(category=article.category)[:3]
+    else:
+        related_articles = related_articles[:3]
+    
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    
+    context = {
+        'article': article,
+        'related_articles': related_articles,
+        'totalitem': totalitem,
+    }
+    
+    return render(request, 'app/help_article_detail.html', context)
+
+
+# Live Chat Views
+
+def live_chat(request):
+    """Live chat interface"""
+    import uuid
+    
+    # Get or create session ID
+    session_id = request.session.get('chat_session_id')
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        request.session['chat_session_id'] = session_id
+    
+    # Handle message submission
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if message_text:
+            LiveChatMessage.objects.create(
+                session_id=session_id,
+                user=request.user if request.user.is_authenticated else None,
+                name=request.POST.get('name', ''),
+                email=request.POST.get('email', ''),
+                message=message_text,
+                is_staff_message=False
+            )
+            return JsonResponse({'success': True})
+    
+    # Get messages for this session
+    messages_list = LiveChatMessage.objects.filter(session_id=session_id)
+    
+    totalitem = 0
+    if request.user.is_authenticated:
+        totalitem = len(Cart.objects.filter(user=request.user))
+    
+    context = {
+        'chat_messages': messages_list,
+        'session_id': session_id,
+        'totalitem': totalitem,
+    }
+    
+    return render(request, 'app/live_chat.html', context)
+
+
+def live_chat_messages(request):
+    """AJAX endpoint to get new messages"""
+    session_id = request.session.get('chat_session_id')
+    if not session_id:
+        return JsonResponse({'messages': []})
+    
+    last_message_id = request.GET.get('last_id', 0)
+    
+    new_messages = LiveChatMessage.objects.filter(
+        session_id=session_id,
+        id__gt=last_message_id
+    )
+    
+    messages_data = [{
+        'id': msg.id,
+        'message': msg.message,
+        'is_staff': msg.is_staff_message,
+        'created_at': msg.created_at.strftime('%H:%M'),
+        'sender': msg.user.username if msg.user else (msg.name or 'You')
+    } for msg in new_messages]
+    
+    return JsonResponse({'messages': messages_data})
 

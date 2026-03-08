@@ -388,3 +388,106 @@ class RedeemHistory(models.Model):
     
     def __str__(self):
         return f"{self.customer.username} redeemed {self.reward.name}"
+
+
+# FAQ & Help Center Models
+class FAQCategory(models.Model):
+    """Category for organizing FAQs"""
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
+    icon = models.CharField(max_length=50, blank=True, help_text="Font Awesome icon class (e.g., fa-shopping-cart)")
+    order = models.PositiveIntegerField(default=0, help_text="Display order (lower numbers first)")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "FAQ Category"
+        verbose_name_plural = "FAQ Categories"
+        ordering = ['order', 'name']
+    
+    def __str__(self):
+        return self.name
+
+
+class FAQ(models.Model):
+    """Frequently Asked Questions"""
+    category = models.ForeignKey(FAQCategory, on_delete=models.CASCADE, related_name='faqs')
+    question = models.CharField(max_length=300)
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0, help_text="Display order within category")
+    is_featured = models.BooleanField(default=False, help_text="Show on homepage/main FAQ page")
+    views = models.PositiveIntegerField(default=0)
+    helpful_count = models.PositiveIntegerField(default=0)
+    not_helpful_count = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "FAQ"
+        verbose_name_plural = "FAQs"
+        ordering = ['category', 'order', '-is_featured', 'question']
+    
+    def __str__(self):
+        return self.question
+    
+    def increment_view(self):
+        """Increment view count"""
+        self.views += 1
+        self.save(update_fields=['views'])
+
+
+class HelpArticle(models.Model):
+    """Detailed help guides and articles"""
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    category = models.ForeignKey(FAQCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='articles')
+    content = models.TextField()
+    summary = models.CharField(max_length=300, blank=True, help_text="Brief summary for listings")
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    featured_image = models.ImageField(upload_to='help_articles/', blank=True, null=True)
+    tags = models.CharField(max_length=200, blank=True, help_text="Comma-separated tags")
+    views = models.PositiveIntegerField(default=0)
+    helpful_count = models.PositiveIntegerField(default=0)
+    not_helpful_count = models.PositiveIntegerField(default=0)
+    is_published = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Help Article"
+        verbose_name_plural = "Help Articles"
+        ordering = ['-is_featured', '-created_at']
+    
+    def __str__(self):
+        return self.title
+    
+    def increment_view(self):
+        """Increment view count"""
+        self.views += 1
+        self.save(update_fields=['views'])
+    
+    def get_tags_list(self):
+        """Return tags as a list"""
+        return [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+
+
+class LiveChatMessage(models.Model):
+    """Simple live chat message storage"""
+    session_id = models.CharField(max_length=100, help_text="Unique session identifier")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
+    message = models.TextField()
+    is_staff_message = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        sender = self.user.username if self.user else (self.name or "Anonymous")
+        return f"{sender}: {self.message[:50]}"

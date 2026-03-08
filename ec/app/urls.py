@@ -58,4 +58,12 @@ urlpatterns = [
     path('rewards/', views.rewards_shop, name='rewards-shop'),
     path('rewards/redeem/<int:reward_id>/', views.redeem_reward, name='redeem-reward'),
     path('my-rewards/', views.my_rewards, name='my-rewards'),
+    
+    # FAQ & Help Center URLs
+    path('faq/', views.faq_center, name='faq-center'),
+    path('faq/<int:faq_id>/', views.faq_detail, name='faq-detail'),
+    path('help/', views.help_center, name='help-center'),
+    path('help/<slug:slug>/', views.help_article_detail, name='help-article-detail'),
+    path('live-chat/', views.live_chat, name='live-chat'),
+    path('live-chat/messages/', views.live_chat_messages, name='live-chat-messages'),
 ]

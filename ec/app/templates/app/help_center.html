@@ -1,0 +1,180 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Help Center{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary mb-3">📚 Help Center</h1>
+        <p class="lead text-muted">Detailed guides and documentation to help you get the most out of our service</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form method="get" action="{% url 'help-center' %}">
+                <div class="input-group input-group-lg shadow-sm">
+                    <input type="text" class="form-control" name="q" placeholder="Search help articles..." 
+                           value="{{ search_query }}" aria-label="Search help articles">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories Filter -->
+    {% if categories %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">Filter by Category:</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'help-center' %}" class="btn btn-sm {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All Categories
+                </a>
+                {% for category in categories %}
+                <a href="{% url 'help-center' %}?category={{ category.slug }}" 
+                   class="btn btn-sm {% if selected_category == category.slug %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    {% if category.icon %}<i class="{{ category.icon }}"></i>{% endif %}
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Featured Articles -->
+    {% if featured_articles and not search_query %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4">⭐ Featured Articles</h3>
+            <div class="row">
+                {% for article in featured_articles %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm hover-lift">
+                        {% if article.featured_image %}
+                        <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-book fa-4x text-white opacity-50"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text text-muted small">
+                                {{ article.summary|default:article.content|truncatewords:20 }}
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+                                <span><i class="fas fa-eye"></i> {{ article.views }}</span>
+                                <span><i class="fas fa-calendar"></i> {{ article.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <a href="{% url 'help-article-detail' article.slug %}" class="btn btn-primary btn-sm w-100">
+                                Read More <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- All Articles -->
+    {% if articles %}
+    <div class="row">
+        <div class="col-12">
+            <h3 class="mb-4">
+                {% if search_query %}
+                    Search Results ({{ articles.count }} articles)
+                {% elif selected_category %}
+                    Articles in {{ selected_category|title }}
+                {% else %}
+                    All Help Articles
+                {% endif %}
+            </h3>
+            
+            <div class="list-group shadow-sm">
+                {% for article in articles %}
+                <a href="{% url 'help-article-detail' article.slug %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <h5 class="mb-0">{{ article.title }}</h5>
+                                {% if article.is_featured %}
+                                <span class="badge bg-warning text-dark ms-2">Featured</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-2 text-muted">
+                                {{ article.summary|default:article.content|truncatewords:30 }}
+                            </p>
+                            <div class="d-flex gap-3 text-muted small">
+                                {% if article.category %}
+                                <span><i class="fas fa-folder"></i> {{ article.category.name }}</span>
+                                {% endif %}
+                                <span><i class="fas fa-eye"></i> {{ article.views }} views</span>
+                                <span><i class="fas fa-calendar"></i> {{ article.created_at|date:"M d, Y" }}</span>
+                                {% if article.helpful_count > 0 %}
+                                <span><i class="fas fa-thumbs-up text-success"></i> {{ article.helpful_count }}</span>
+                                {% endif %}
+                            </div>
+                            {% if article.tags %}
+                            <div class="mt-2">
+                                {% for tag in article.get_tags_list %}
+                                <a href="{% url 'help-center' %}?tag={{ tag }}" class="badge bg-light text-dark text-decoration-none">
+                                    #{{ tag }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <i class="fas fa-chevron-right text-muted ms-3"></i>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% elif search_query %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle"></i> No articles found for "{{ search_query }}". Try different keywords or browse categories.
+    </div>
+    {% endif %}
+
+    <!-- Quick Help Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body text-center py-5">
+                    <h4 class="mb-3">Can't find what you're looking for?</h4>
+                    <p class="text-muted mb-4">Our support team is here to help you!</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'faq-center' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-question-circle"></i> Browse FAQs
+                        </a>
+                        <a href="{% url 'contact' %}" class="btn btn-outline-success">
+                            <i class="fas fa-envelope"></i> Contact Support
+                        </a>
+                        <a href="{% url 'live-chat' %}" class="btn btn-info text-white">
+                            <i class="fas fa-comments"></i> Start Live Chat
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+</style>
+{% endblock main-content %}
