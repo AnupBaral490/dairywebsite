@@ -4,39 +4,60 @@
 
 {% block main-content %}
 <div class="container my-5">
-    <!-- Page Header -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary mb-3">📚 Help Center</h1>
-        <p class="lead text-muted">Detailed guides and documentation to help you get the most out of our service</p>
+    <div class="help-hero mb-4 p-4 p-md-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8 text-center text-lg-start">
+                <div class="hero-badge mb-3">Support Knowledge Base</div>
+                <h1 class="display-5 fw-bold mb-2">Help Center</h1>
+                <p class="lead text-muted mb-0">Detailed guides and documentation to help you get the most out of our service.</p>
+            </div>
+            <div class="col-lg-4">
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ articles.count }}</div>
+                        <div class="stat-label">Articles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ categories|length }}</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ featured_articles|length|default:0 }}</div>
+                        <div class="stat-label">Featured</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-9">
             <form method="get" action="{% url 'help-center' %}">
-                <div class="input-group input-group-lg shadow-sm">
-                    <input type="text" class="form-control" name="q" placeholder="Search help articles..." 
+                <div class="input-group input-group-lg shadow-sm search-wrap">
+                    <span class="input-group-text bg-white border-0 ps-3">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-0" name="q" placeholder="Search help articles..." 
                            value="{{ search_query }}" aria-label="Search help articles">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search"></i> Search
+                    <button class="btn btn-primary px-4" type="submit">
+                        Search
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Categories Filter -->
     {% if categories %}
-    <div class="row mb-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <h5 class="mb-3">Filter by Category:</h5>
-            <div class="d-flex flex-wrap gap-2">
-                <a href="{% url 'help-center' %}" class="btn btn-sm {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <h6 class="text-uppercase text-muted fw-bold mb-3">Filter by Category</h6>
+            <div class="d-flex flex-wrap gap-2 category-chips">
+                <a href="{% url 'help-center' %}" class="chip {% if not selected_category %}chip-active{% endif %}">
                     All Categories
                 </a>
                 {% for category in categories %}
                 <a href="{% url 'help-center' %}?category={{ category.slug }}" 
-                   class="btn btn-sm {% if selected_category == category.slug %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                   class="chip {% if selected_category == category.slug %}chip-active{% endif %}">
                     {% if category.icon %}<i class="{{ category.icon }}"></i>{% endif %}
                     {{ category.name }}
                 </a>
@@ -46,29 +67,32 @@
     </div>
     {% endif %}
 
-    <!-- Featured Articles -->
     {% if featured_articles and not search_query %}
     <div class="row mb-5">
         <div class="col-12">
-            <h3 class="mb-4">⭐ Featured Articles</h3>
+            <div class="section-head d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0"><i class="fas fa-star text-warning me-2"></i>Featured Articles</h3>
+                <span class="small text-muted">Top picks for quick help</span>
+            </div>
             <div class="row">
                 {% for article in featured_articles %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm hover-lift">
+                    <div class="card h-100 shadow-sm hover-lift article-card">
                         {% if article.featured_image %}
                         <img src="{{ article.featured_image.url }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
                         {% else %}
-                        <div class="card-img-top bg-gradient-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <div class="card-img-top article-placeholder d-flex align-items-center justify-content-center" style="height: 200px;">
                             <i class="fas fa-book fa-4x text-white opacity-50"></i>
                         </div>
                         {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ article.title }}</h5>
+                            <span class="badge rounded-pill bg-warning text-dark mb-2">Featured</span>
+                            <h5 class="card-title mb-2">{{ article.title }}</h5>
                             <p class="card-text text-muted small">
                                 {{ article.summary|default:article.content|truncatewords:20 }}
                             </p>
                             <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
-                                <span><i class="fas fa-eye"></i> {{ article.views }}</span>
+                                <span><i class="fas fa-eye"></i> {{ article.views }} views</span>
                                 <span><i class="fas fa-calendar"></i> {{ article.created_at|date:"M d, Y" }}</span>
                             </div>
                             <a href="{% url 'help-article-detail' article.slug %}" class="btn btn-primary btn-sm w-100">
@@ -83,11 +107,10 @@
     </div>
     {% endif %}
 
-    <!-- All Articles -->
     {% if articles %}
-    <div class="row">
-        <div class="col-12">
-            <h3 class="mb-4">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <h3 class="mb-3"><i class="fas fa-book-open text-primary me-2"></i>
                 {% if search_query %}
                     Search Results ({{ articles.count }} articles)
                 {% elif selected_category %}
@@ -97,15 +120,15 @@
                 {% endif %}
             </h3>
             
-            <div class="list-group shadow-sm">
+            <div class="list-group shadow-sm article-list-wrap">
                 {% for article in articles %}
-                <a href="{% url 'help-article-detail' article.slug %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'help-article-detail' article.slug %}" class="list-group-item list-group-item-action article-item">
                     <div class="d-flex w-100 justify-content-between align-items-start">
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center mb-2">
                                 <h5 class="mb-0">{{ article.title }}</h5>
                                 {% if article.is_featured %}
-                                <span class="badge bg-warning text-dark ms-2">Featured</span>
+                                <span class="badge rounded-pill bg-warning text-dark ms-2">Featured</span>
                                 {% endif %}
                             </div>
                             <p class="mb-2 text-muted">
@@ -124,7 +147,7 @@
                             {% if article.tags %}
                             <div class="mt-2">
                                 {% for tag in article.get_tags_list %}
-                                <a href="{% url 'help-center' %}?tag={{ tag }}" class="badge bg-light text-dark text-decoration-none">
+                                <a href="{% url 'help-center' %}?tag={{ tag }}" class="badge bg-light text-dark text-decoration-none border">
                                     #{{ tag }}
                                 </a>
                                 {% endfor %}
@@ -137,28 +160,48 @@
                 {% endfor %}
             </div>
         </div>
+
+        <div class="col-lg-4">
+            <div class="side-panel mb-3">
+                <h6 class="text-uppercase text-muted fw-bold mb-3">Popular Topics</h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'help-center' %}?q=shipping" class="topic-link"><i class="fas fa-truck"></i> Shipping and Delivery</a>
+                    <a href="{% url 'help-center' %}?q=returns" class="topic-link"><i class="fas fa-undo"></i> Returns and Refunds</a>
+                    <a href="{% url 'help-center' %}?q=payment" class="topic-link"><i class="fas fa-credit-card"></i> Payments and Security</a>
+                    <a href="{% url 'help-center' %}?q=loyalty" class="topic-link"><i class="fas fa-gift"></i> Loyalty Rewards</a>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <h6 class="text-uppercase text-muted fw-bold mb-3">Need Fast Support?</h6>
+                <p class="small text-muted mb-3">Get direct help from our team if you cannot find the answer in articles.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'live-chat' %}" class="btn btn-primary btn-sm"><i class="fas fa-comments"></i> Start Live Chat</a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-success btn-sm"><i class="fas fa-envelope"></i> Contact Support</a>
+                </div>
+            </div>
+        </div>
     </div>
     {% elif search_query %}
-    <div class="alert alert-info text-center">
+    <div class="alert alert-info text-center shadow-sm border-0">
         <i class="fas fa-info-circle"></i> No articles found for "{{ search_query }}". Try different keywords or browse categories.
     </div>
     {% endif %}
 
-    <!-- Quick Help Section -->
     <div class="row mt-5">
         <div class="col-12">
-            <div class="card bg-light shadow-sm">
+            <div class="card quick-help-card shadow-sm border-0">
                 <div class="card-body text-center py-5">
-                    <h4 class="mb-3">Can't find what you're looking for?</h4>
-                    <p class="text-muted mb-4">Our support team is here to help you!</p>
+                    <h4 class="mb-2">Can't find what you're looking for?</h4>
+                    <p class="text-muted mb-4">Our support team is ready to help through FAQs, chat, or direct support.</p>
                     <div class="d-flex justify-content-center gap-3 flex-wrap">
-                        <a href="{% url 'faq-center' %}" class="btn btn-outline-primary">
+                        <a href="{% url 'faq-center' %}" class="btn btn-outline-primary px-4">
                             <i class="fas fa-question-circle"></i> Browse FAQs
                         </a>
-                        <a href="{% url 'contact' %}" class="btn btn-outline-success">
+                        <a href="{% url 'contact' %}" class="btn btn-outline-success px-4">
                             <i class="fas fa-envelope"></i> Contact Support
                         </a>
-                        <a href="{% url 'live-chat' %}" class="btn btn-info text-white">
+                        <a href="{% url 'live-chat' %}" class="btn btn-primary px-4">
                             <i class="fas fa-comments"></i> Start Live Chat
                         </a>
                     </div>
@@ -169,12 +212,206 @@
 </div>
 
 <style>
+.help-hero {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.help-hero::after {
+    content: none;
+    position: absolute;
+    right: -60px;
+    bottom: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.08);
+    pointer-events: none;
+}
+
+.hero-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1e293b;
+    background: #ffffff;
+    border: 1px solid #dbe3ea;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.stat-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.search-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+.search-wrap:focus-within {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+}
+
+.search-wrap .form-control:focus {
+    box-shadow: none;
+}
+
+.category-chips .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    color: #1e293b;
+    border: 1px solid #d1d9e6;
+    border-radius: 999px;
+    padding: 0.38rem 0.8rem;
+    font-size: 0.88rem;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.category-chips .chip:hover {
+    border-color: #64748b;
+    color: #0f172a;
+}
+
+.category-chips .chip-active {
+    background: #1e293b;
+    border-color: #1e293b;
+    color: #fff;
+}
+
+.article-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.article-placeholder {
+    background: linear-gradient(135deg, #334155 0%, #64748b 100%);
+}
+
+.article-list-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.article-item {
+    border: 0;
+    border-bottom: 1px solid #eef2f8;
+    padding-top: 1.05rem;
+    padding-bottom: 1.05rem;
+    background: #ffffff;
+}
+
+.article-item h5 {
+    font-size: 1.05rem;
+}
+
+.article-item .badge {
+    font-weight: 600;
+}
+
+.article-item:last-child {
+    border-bottom: 0;
+}
+
 .hover-lift {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .hover-lift:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 0.45rem 0.85rem rgba(15, 23, 42, 0.12) !important;
+}
+
+.quick-help-card {
+    background: #f8fafc;
+    border-radius: 14px;
+}
+
+.side-panel {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.topic-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #334155;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.topic-link:hover {
+    border-color: #94a3b8;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+@media (max-width: 991px) {
+    .hero-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .help-hero {
+        border-radius: 16px;
+    }
+
+    .hero-stats {
+        gap: 0.5rem;
+    }
+
+    .stat-item {
+        padding: 0.6rem 0.35rem;
+    }
+
+    .article-item .d-flex.gap-3 {
+        gap: 0.65rem !important;
+        flex-wrap: wrap;
+    }
 }
 </style>
 {% endblock main-content %}
