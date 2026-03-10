@@ -920,8 +920,10 @@ def help_article_detail(request, slug):
 # Live Chat Views
 
 def live_chat(request):
-    """Live chat interface"""
+    """Live chat interface with professional chatbot features"""
     import uuid
+    import json
+    from django.http import JsonResponse
     
     # Get or create session ID
     session_id = request.session.get('chat_session_id')
@@ -933,7 +935,7 @@ def live_chat(request):
     if request.method == 'POST':
         message_text = request.POST.get('message', '').strip()
         if message_text:
-            LiveChatMessage.objects.create(
+            msg = LiveChatMessage.objects.create(
                 session_id=session_id,
                 user=request.user if request.user.is_authenticated else None,
                 name=request.POST.get('name', ''),
@@ -941,7 +943,19 @@ def live_chat(request):
                 message=message_text,
                 is_staff_message=False
             )
-            return JsonResponse({'success': True})
+            
+            # Check for common queries and auto-respond
+            auto_response = check_and_generate_auto_response(message_text)
+            if auto_response:
+                # Create auto-response message
+                LiveChatMessage.objects.create(
+                    session_id=session_id,
+                    user=None,
+                    message=auto_response,
+                    is_staff_message=True
+                )
+            
+            return JsonResponse({'success': True, 'message_id': msg.id})
     
     # Get messages for this session
     messages_list = LiveChatMessage.objects.filter(session_id=session_id)
@@ -959,8 +973,66 @@ def live_chat(request):
     return render(request, 'app/live_chat.html', context)
 
 
+def check_and_generate_auto_response(message_text):
+    """Generate auto-response for common queries"""
+    message_lower = message_text.lower().strip()
+    
+    # Don't auto-respond to very short messages that might be greetings
+    if len(message_lower) <= 2:
+        return None
+    
+    # Common queries and responses
+    auto_responses = {
+        'shipping': {
+            'keywords': ['shipping', 'delivery', 'how long', 'when will', 'how many days', 'delivery time'],
+            'response': 'Thank you for your inquiry! We offer multiple shipping options with standard and express delivery. Shipping times typically range from 2-7 business days depending on your location. You can track your order in real-time through your account dashboard. Is there anything specific about shipping you\'d like to know?'
+        },
+        'return': {
+            'keywords': ['return', 'refund', 'exchange', 'return policy', 'send back'],
+            'response': 'Great question! We have a hassle-free 30-day return policy. If you\'re not satisfied with your purchase, you can initiate a return through your account. Please ensure the item is in its original condition with all original packaging. Our team will process your return within 5-7 business days. Would you like help starting a return?'
+        },
+        'payment': {
+            'keywords': ['payment', 'pay', 'credit card', 'debit', 'upi', 'wallet', 'payment method', 'card'],
+            'response': 'We accept all major credit cards, debit cards, digital wallets (Google Pay, Apple Pay), and net banking options. All your transactions are encrypted with bank-level security. If you\'re experiencing any payment issues, I\'m here to help! What specific issue are you facing?'
+        },
+        'order': {
+            'keywords': ['order', 'my order', 'order status', 'track', 'tracking', 'where is my'],
+            'response': 'You can check your order status anytime by visiting your account dashboard and clicking "My Orders". You\'ll receive email updates at each stage - from confirmation to dispatch, and finally delivery. Each order has a tracking number for real-time updates. Can I help you with a specific order?'
+        },
+        'product': {
+            'keywords': ['product', 'item', 'size', 'color', 'available', 'stock', 'in stock', 'recommendation'],
+            'response': 'We have a wide range of products across multiple categories. You can browse by category, use our search feature, or check trending items. If you need specific product recommendations or have questions about a particular item, I\'m happy to help! What are you looking for?'
+        },
+        'account': {
+            'keywords': ['account', 'password', 'reset', 'login', 'sign up', 'register', 'profile', 'my profile'],
+            'response': 'Managing your account is easy! You can update your profile information, manage addresses, view order history, and more from your dashboard. For security-related questions like password resets, we can guide you step-by-step. What would you like to know about your account?'
+        },
+        'discount': {
+            'keywords': ['discount', 'coupon', 'promo', 'code', 'offer', 'sale', 'special price'],
+            'response': 'We regularly offer special discounts and promotions! Check your email for exclusive deals, browse our "Offers" section, and apply coupon codes at checkout. Loyalty members get extra rewards and early access to sales. Would you like information about our current promotions?'
+        },
+        'contact': {
+            'keywords': ['contact', 'email', 'phone', 'call', 'customer service', 'reach you'],
+            'response': 'You can reach us through multiple channels - live chat (here!), email at support@yourdomain.com, or visit our Help Center for FAQs. We typically respond within minutes during business hours. Is there something specific I can help you with right now?'
+        },
+        'help': {
+            'keywords': ['can you help', 'need help', 'help me', 'assistance', 'support'],
+            'response': 'Absolutely! I\'m here to help. Could you please tell me more about what you need assistance with? Whether it\'s about an order, product information, returns, or anything else, I\'m happy to help guide you through it!'
+        }
+    }
+    
+    # Check for keyword matches
+    for category, data in auto_responses.items():
+        for keyword in data['keywords']:
+            if keyword in message_lower:
+                return data['response']
+    
+    # Don't auto-respond to very short messages
+    return None
+
+
 def live_chat_messages(request):
-    """AJAX endpoint to get new messages"""
+    """AJAX endpoint to get new messages with enhanced data"""
     session_id = request.session.get('chat_session_id')
     if not session_id:
         return JsonResponse({'messages': []})
@@ -970,15 +1042,16 @@ def live_chat_messages(request):
     new_messages = LiveChatMessage.objects.filter(
         session_id=session_id,
         id__gt=last_message_id
-    )
+    ).order_by('id')
     
     messages_data = [{
         'id': msg.id,
         'message': msg.message,
         'is_staff': msg.is_staff_message,
         'created_at': msg.created_at.strftime('%H:%M'),
-        'sender': msg.user.username if msg.user else (msg.name or 'You')
+        'sender': msg.user.username if msg.user else (msg.name or 'Support Agent'),
+        'timestamp': msg.created_at.isoformat()
     } for msg in new_messages]
     
-    return JsonResponse({'messages': messages_data})
+    return JsonResponse({'messages': messages_data, 'total': new_messages.count()})
 

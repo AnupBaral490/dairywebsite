@@ -7,66 +7,82 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Chat Header -->
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3">
-                            <i class="fas fa-headset fa-2x"></i>
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-robot fa-2x"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0">💬 Live Chat Support</h4>
+                                <small class="text-white-50">Typically reply within minutes</small>
+                            </div>
                         </div>
                         <div>
-                            <h4 class="mb-0">💬 Live Chat Support</h4>
-                            <small>We typically reply within minutes</small>
-                        </div>
-                        <div class="ms-auto">
-                            <span class="badge bg-success">
-                                <i class="fas fa-circle"></i> Online
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                <span class="dot me-2" style="display: inline-block; width: 8px; height: 8px; background: #22dd00; border-radius: 50%; animation: pulse 2s infinite;"></span> Online
                             </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Chat Messages Area -->
-                <div class="card-body" id="chatMessagesArea" style="height: 500px; overflow-y: auto; background-color: #f8f9fa;">
+                <div class="card-body chat-container" id="chatMessagesArea" style="height: 500px; overflow-y: auto; background-color: #f8f9fa; position: relative;">
+                    <div id="welcomeMessage" class="text-center text-muted py-5">
+                        <i class="fas fa-robot fa-4x mb-3" style="color: #667eea; opacity: 0.6;"></i>
+                        <h5>Welcome to Support!</h5>
+                        <p class="small">Our team is here to help. Start typing your question below.</p>
+                    </div>
                     {% if chat_messages %}
                         {% for msg in chat_messages %}
                         <div class="chat-message {% if msg.is_staff_message %}staff-message{% else %}user-message{% endif %} mb-3" data-message-id="{{ msg.id }}">
                             <div class="{% if msg.is_staff_message %}text-start{% else %}text-end{% endif %}">
-                                <div class="d-inline-block p-3 rounded shadow-sm {% if msg.is_staff_message %}bg-white{% else %}bg-primary text-white{% endif %}" style="max-width: 75%;">
+                                <div class="d-inline-block p-3 rounded-3 shadow-sm {% if msg.is_staff_message %}bg-white border{% else %}bg-primary text-white{% endif %}" style="max-width: 75%; word-wrap: break-word;">
                                     {% if msg.is_staff_message %}
-                                    <div class="fw-bold small mb-1">
-                                        <i class="fas fa-user-tie"></i> Support Team
+                                    <div class="fw-bold small mb-2 d-flex align-items-center">
+                                        <i class="fas fa-headset me-2"></i> Support Agent
                                     </div>
                                     {% endif %}
-                                    <div>{{ msg.message }}</div>
-                                    <div class="small {% if msg.is_staff_message %}text-muted{% else %}text-white-50{% endif %} mt-1">
-                                        {{ msg.created_at|date:"H:i" }}
+                                    <div class="message-text">{{ msg.message }}</div>
+                                    <div class="small {% if msg.is_staff_message %}text-muted{% else %}text-white-50{% endif %} mt-2 text-end" style="font-size: 0.75rem;">
+                                        <i class="fas fa-clock me-1"></i>{{ msg.created_at|date:"H:i" }}
+                                        {% if not msg.is_staff_message %}
+                                        <i class="fas fa-check-double ms-1"></i>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {% endfor %}
-                    {% else %}
-                    <div class="text-center text-muted py-5">
-                        <i class="fas fa-comments fa-3x mb-3 opacity-50"></i>
-                        <p>Start a conversation with our support team!</p>
-                    </div>
                     {% endif %}
+                    <div id="typingIndicator" class="chat-message staff-message mb-3" style="display: none;">
+                        <div class="text-start">
+                            <div class="d-inline-block p-3 rounded-3 bg-white border" style="width: 60px;">
+                                <div class="typing-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Chat Input Area -->
-                <div class="card-footer bg-white">
+                <div class="card-footer bg-white border-top-0">
                     {% if not user.is_authenticated %}
                     <!-- Guest User Info Form -->
-                    <div id="guestInfoForm" class="mb-3">
-                        <div class="alert alert-info small mb-2">
-                            <i class="fas fa-info-circle"></i> Please provide your contact details before chatting
+                    <div id="guestInfoForm" class="mb-3 p-3 bg-light rounded-3" style="border-left: 4px solid #667eea;">
+                        <div class="alert alert-info small mb-3 border-0">
+                            <i class="fas fa-info-circle"></i> Please share your contact details before we start chatting
                         </div>
                         <div class="row g-2">
                             <div class="col-md-6">
-                                <input type="text" class="form-control form-control-sm" id="guestName" placeholder="Your Name">
+                                <input type="text" class="form-control form-control-sm rounded-2" id="guestName" placeholder="Your Full Name" required>
                             </div>
                             <div class="col-md-6">
-                                <input type="email" class="form-control form-control-sm" id="guestEmail" placeholder="Your Email">
+                                <input type="email" class="form-control form-control-sm rounded-2" id="guestEmail" placeholder="Your Email Address" required>
                             </div>
                         </div>
                     </div>
@@ -75,16 +91,20 @@
                     <!-- Message Input Form -->
                     <form id="chatForm">
                         {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="messageInput" 
-                                   placeholder="Type your message..." autocomplete="off" required>
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-paper-plane"></i> Send
+                        <div class="input-group rounded-3" style="background: #f0f0f0; padding: 5px; position: relative;">
+                            <input type="text" class="form-control border-0" id="messageInput" 
+                                   placeholder="Type your message here..." autocomplete="off" required style="background: transparent;">
+                            <button class="btn btn-primary rounded-2 border-0 px-4" type="submit" id="sendBtn">
+                                <i class="fas fa-paper-plane"></i>
                             </button>
+                        </div>
+                        <!-- Suggestions Dropdown -->
+                        <div id="suggestionsContainer" class="suggestions-dropdown" style="display: none; position: absolute; top: 100%; left: 5px; right: 5px; background: white; border: 1px solid #ddd; border-radius: 8px; max-height: 250px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                            <div id="suggestionsList"></div>
                         </div>
                     </form>
 
-                    <div class="text-center mt-2">
+                    <div class="text-center mt-3">
                         <small class="text-muted">
                             <i class="fas fa-lock"></i> Your conversation is secure and private
                         </small>
@@ -94,16 +114,16 @@
 
             <!-- Help Links -->
             <div class="text-center mt-4">
-                <p class="text-muted">Looking for something else?</p>
+                <p class="text-muted small mb-3"><strong>Need more help?</strong></p>
                 <div class="d-flex gap-2 justify-content-center flex-wrap">
-                    <a href="{% url 'faq-center' %}" class="btn btn-sm btn-outline-primary">
+                    <a href="{% url 'faq-center' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                         <i class="fas fa-question-circle"></i> FAQs
                     </a>
-                    <a href="{% url 'help-center' %}" class="btn btn-sm btn-outline-info">
+                    <a href="{% url 'help-center' %}" class="btn btn-sm btn-outline-info rounded-pill px-3">
                         <i class="fas fa-book"></i> Help Center
                     </a>
-                    <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-success">
-                        <i class="fas fa-envelope"></i> Email Support
+                    <a href="{% url 'contact' %}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                        <i class="fas fa-envelope"></i> Email Us
                     </a>
                 </div>
             </div>
@@ -112,12 +132,13 @@
 </div>
 
 <style>
-#chatMessagesArea {
-    scroll-behavior: smooth;
-}
-
-.chat-message {
-    animation: slideIn 0.3s ease;
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 @keyframes slideIn {
@@ -131,6 +152,24 @@
     }
 }
 
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-10px);
+    }
+}
+
+.chat-container {
+    scroll-behavior: smooth;
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.chat-message {
+    animation: slideIn 0.4s ease-out;
+}
+
 .user-message {
     text-align: right;
 }
@@ -138,27 +177,281 @@
 .staff-message {
     text-align: left;
 }
+
+/* Typing indicator animation */
+.typing-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    background-color: #667eea;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.message-text {
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+#messageInput:focus {
+    box-shadow: none;
+    background: transparent !important;
+}
+
+.chat-message.user-message .bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Smooth send button */
+#sendBtn {
+    transition: all 0.3s ease;
+}
+
+#sendBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+#sendBtn:active {
+    transform: translateY(0);
+}
+
+/* Connection status indicator */
+.connection-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.connection-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.connection-dot.connected {
+    background-color: #22dd00;
+}
+
+.connection-dot.disconnected {
+    background-color: #ff6b6b;
+    animation: none;
+}
+
+/* Better scrollbar */
+#chatMessagesArea::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chatMessagesArea::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#chatMessagesArea::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+#chatMessagesArea::-webkit-scrollbar-thumb:hover {
+    background: #667eea;
+}
+
+/* Suggestions Dropdown */
+.suggestions-dropdown {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    border: 1px solid #e0e0ff;
+}
+
+.suggestion-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f3ff;
+    border-left: 3px solid #667eea;
+    padding-left: 13px;
+}
+
+.suggestion-item i {
+    color: #667eea;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.suggestion-item-text {
+    flex: 1;
+}
+
+.suggestion-item-text .text {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.suggestion-item-text .category {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.suggestions-empty {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+}
+
 </style>
 
 <script>
+// Predefined suggestions for common questions
+const commonQuestions = [
+    { text: "What is your shipping policy?", category: "Shipping", icon: "fa-truck" },
+    { text: "How long does delivery take?", category: "Shipping", icon: "fa-truck" },
+    { text: "Do you offer free shipping?", category: "Shipping", icon: "fa-truck" },
+    { text: "How can I track my order?", category: "Orders", icon: "fa-box" },
+    { text: "What is your return policy?", category: "Returns", icon: "fa-undo" },
+    { text: "Can I return my order?", category: "Returns", icon: "fa-undo" },
+    { text: "How do I get a refund?", category: "Returns", icon: "fa-undo" },
+    { text: "What payment methods do you accept?", category: "Payment", icon: "fa-credit-card" },
+    { text: "Is my payment secure?", category: "Payment", icon: "fa-credit-card" },
+    { text: "How do I create an account?", category: "Account", icon: "fa-user" },
+    { text: "How do I reset my password?", category: "Account", icon: "fa-user" },
+    { text: "How do I update my profile?", category: "Account", icon: "fa-user" },
+    { text: "Do you have any current offers?", category: "Promotions", icon: "fa-tag" },
+    { text: "How do I apply a coupon code?", category: "Promotions", icon: "fa-tag" },
+    { text: "What products do you have?", category: "Products", icon: "fa-shopping-bag" },
+    { text: "Is this product available?", category: "Products", icon: "fa-shopping-bag" },
+    { text: "Can you help me?", category: "Support", icon: "fa-headset" },
+    { text: "I need customer support", category: "Support", icon: "fa-headset" },
+    { text: "How can I contact you?", category: "Support", icon: "fa-headset" },
+    { text: "What are your business hours?", category: "Support", icon: "fa-clock" },
+];
+
 document.addEventListener('DOMContentLoaded', function() {
     const chatForm = document.getElementById('chatForm');
     const messageInput = document.getElementById('messageInput');
     const chatMessagesArea = document.getElementById('chatMessagesArea');
     const guestName = document.getElementById('guestName');
     const guestEmail = document.getElementById('guestEmail');
+    const sendBtn = document.getElementById('sendBtn');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const suggestionsContainer = document.getElementById('suggestionsContainer');
+    const suggestionsList = document.getElementById('suggestionsList');
+    
+    let isFirstMessage = true;
+    let lastMessageId = {{ chat_messages.last.id|default:0 }};
+    let pollTimeout = null;
+    let typingTimeout = null;
+    let lastActivityTime = Date.now();
+    
+    // Filter and display suggestions based on input
+    function updateSuggestions() {
+        const input = messageInput.value.trim().toLowerCase();
+        
+        if (input.length === 0) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+        
+        // Filter suggestions that match the input
+        const filteredSuggestions = commonQuestions.filter(q => 
+            q.text.toLowerCase().includes(input) || 
+            q.category.toLowerCase().includes(input)
+        );
+        
+        // Display suggestions or empty state
+        if (filteredSuggestions.length > 0) {
+            suggestionsList.innerHTML = filteredSuggestions.map(q => `
+                <div class="suggestion-item" onclick="selectSuggestion('${escapeHtml(q.text)}')">
+                    <i class="fas ${q.icon}"></i>
+                    <div class="suggestion-item-text">
+                        <div class="text">${escapeHtml(q.text)}</div>
+                        <div class="category">${q.category}</div>
+                    </div>
+                </div>
+            `).join('');
+            suggestionsContainer.style.display = 'block';
+        } else if (input.length > 0) {
+            suggestionsList.innerHTML = '<div class="suggestions-empty"><i class="fas fa-search me-2"></i>No suggestions found</div>';
+            suggestionsContainer.style.display = 'block';
+        } else {
+            suggestionsContainer.style.display = 'none';
+        }
+    }
+    
+    // Select a suggestion and fill the input
+    window.selectSuggestion = function(text) {
+        messageInput.value = text;
+        suggestionsContainer.style.display = 'none';
+        messageInput.focus();
+    };
+    
+    // Listen to input changes
+    messageInput.addEventListener('input', updateSuggestions);
+    
+    // Hide suggestions when input is cleared
+    messageInput.addEventListener('blur', function() {
+        setTimeout(() => {
+            suggestionsContainer.style.display = 'none';
+        }, 200);
+    });
+    
+    // Show suggestions on focus if input exists
+    messageInput.addEventListener('focus', function() {
+        if (this.value.trim().length > 0) {
+            updateSuggestions();
+        }
+    });
     
     // Auto-scroll to bottom
     function scrollToBottom() {
-        chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+        setTimeout(() => {
+            chatMessagesArea.scrollTop = chatMessagesArea.scrollHeight;
+        }, 50);
     }
     
     // Initial scroll
-    scrollToBottom();
+    if (chatMessagesArea.children.length > 0) {
+        scrollToBottom();
+        welcomeMessage.style.display = 'none';
+    }
     
     // Handle message submission
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        // Hide suggestions when submitting
+        suggestionsContainer.style.display = 'none';
         
         const message = messageInput.value.trim();
         if (!message) return;
@@ -168,11 +461,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const name = guestName ? guestName.value.trim() : '';
         const email = guestEmail ? guestEmail.value.trim() : '';
         
-        if (!name || !email) {
-            alert('Please provide your name and email');
+        if (!name) {
+            guestName.classList.add('is-invalid');
+            guestName.focus();
             return;
         }
+        if (!email) {
+            guestEmail.classList.add('is-invalid');
+            guestEmail.focus();
+            return;
+        }
+        guestName.classList.remove('is-invalid');
+        guestEmail.classList.remove('is-invalid');
         {% endif %}
+        
+        // Disable send button during request
+        sendBtn.disabled = true;
+        messageInput.disabled = true;
         
         const formData = new FormData();
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -182,6 +487,12 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('name', name);
         formData.append('email', email);
         {% endif %}
+        
+        // Add message to chat
+        addMessageToChat(message, false, 'sending');
+        messageInput.value = '';
+        scrollToBottom();
+        lastActivityTime = Date.now();
         
         // Send message
         fetch('{% url "live-chat" %}', {
@@ -194,9 +505,20 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Add message to chat
-                addMessageToChat(message, false);
-                messageInput.value = '';
+                // Update last message ID to prevent duplicate display
+                if (data.message_id) {
+                    lastMessageId = data.message_id;
+                }
+                
+                // Update last message to show as sent
+                const lastMsg = chatMessagesArea.querySelector('.user-message:last-of-type');
+                if (lastMsg) {
+                    const statusIcon = lastMsg.querySelector('.fa-clock');
+                    if (statusIcon) {
+                        statusIcon.classList.remove('fa-clock');
+                        statusIcon.classList.add('fa-check-double');
+                    }
+                }
                 
                 // Hide guest info form after first message
                 {% if not user.is_authenticated %}
@@ -205,13 +527,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     guestForm.style.display = 'none';
                 }
                 {% endif %}
+                
+                // Show typing indicator
+                showTypingIndicator();
+                lastActivityTime = Date.now();
+                
+                // Set timeout to hide typing indicator if no response (30 seconds)
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    if (typingIndicator.style.display === 'block') {
+                        hideTypingIndicator();
+                        addSystemMessage('Please wait for an agent or try asking a specific question.');
+                    }
+                }, 30000);
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            addSystemMessage('Failed to send message. Please try again.');
+            hideTypingIndicator();
+        })
+        .finally(() => {
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+            messageInput.focus();
+        });
     });
     
     // Add message to chat UI
-    function addMessageToChat(message, isStaff) {
+    function addMessageToChat(message, isStaff, status = 'sent') {
+        // Clear typing timeout when response is received
+        if (isStaff) {
+            clearTimeout(typingTimeout);
+        }
+        
+        // Hide welcome message on first real message
+        if (welcomeMessage && welcomeMessage.style.display !== 'none') {
+            welcomeMessage.style.display = 'none';
+        }
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${isStaff ? 'staff-message' : 'user-message'} mb-3`;
         
@@ -219,12 +573,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const time = now.getHours().toString().padStart(2, '0') + ':' + 
                      now.getMinutes().toString().padStart(2, '0');
         
+        const statusIcon = !isStaff ? `<i class="fas fa-${status === 'sending' ? 'hourglass-half' : 'check-double'} ms-1"></i>` : '';
+        
         messageDiv.innerHTML = `
             <div class="${isStaff ? 'text-start' : 'text-end'}">
-                <div class="d-inline-block p-3 rounded shadow-sm ${isStaff ? 'bg-white' : 'bg-primary text-white'}" style="max-width: 75%;">
-                    ${isStaff ? '<div class="fw-bold small mb-1"><i class="fas fa-user-tie"></i> Support Team</div>' : ''}
-                    <div>${message}</div>
-                    <div class="small ${isStaff ? 'text-muted' : 'text-white-50'} mt-1">${time}</div>
+                <div class="d-inline-block p-3 rounded-3 shadow-sm ${isStaff ? 'bg-white border' : 'bg-primary text-white'}" style="max-width: 75%; word-wrap: break-word;">
+                    ${isStaff ? '<div class="fw-bold small mb-2 d-flex align-items-center"><i class="fas fa-headset me-2"></i> Support Agent</div>' : ''}
+                    <div class="message-text">${escapeHtml(message)}</div>
+                    <div class="small ${isStaff ? 'text-muted' : 'text-white-50'} mt-2 text-end" style="font-size: 0.75rem;">
+                        <i class="fas fa-clock me-1"></i>${time}
+                        ${statusIcon}
+                    </div>
                 </div>
             </div>
         `;
@@ -233,20 +592,82 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollToBottom();
     }
     
-    // Poll for new messages every 3 seconds
-    let lastMessageId = {{ chat_messages.last.id|default:0 }};
+    // Show typing indicator
+    function showTypingIndicator() {
+        typingIndicator.style.display = 'block';
+        scrollToBottom();
+    }
     
-    setInterval(function() {
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        typingIndicator.style.display = 'none';
+    }
+    
+    // Add system message
+    function addSystemMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'alert alert-warning alert-dismissible fade show mb-3';
+        messageDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        chatMessagesArea.appendChild(messageDiv);
+        scrollToBottom();
+    }
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Poll for new messages
+    function pollMessages() {
+        const sessionId = '{{ session_id }}';
+        
         fetch(`{% url 'live-chat-messages' %}?last_id=${lastMessageId}`)
             .then(response => response.json())
             .then(data => {
-                data.messages.forEach(msg => {
-                    addMessageToChat(msg.message, msg.is_staff);
-                    lastMessageId = msg.id;
-                });
+                if (data.messages && data.messages.length > 0) {
+                    hideTypingIndicator();
+                    
+                    data.messages.forEach(msg => {
+                        addMessageToChat(msg.message, msg.is_staff);
+                        lastMessageId = Math.max(lastMessageId, msg.id);
+                    });
+                }
             })
-            .catch(error => console.error('Error polling messages:', error));
-    }, 3000);
+            .catch(error => {
+                console.error('Error polling messages:', error);
+            })
+            .finally(() => {
+                // Schedule next poll with intelligent timing
+                const timeSinceLastActivity = Date.now() - lastActivityTime;
+                const pollInterval = timeSinceLastActivity > 30000 ? 5000 : 3000; // 5s if idle, 3s if active
+                pollTimeout = setTimeout(pollMessages, pollInterval);
+            });
+    }
+    
+    // Start polling
+    pollMessages();
+    
+    // Enhance input field with character counter
+    messageInput.addEventListener('input', function() {
+        if (this.value.trim()) {
+            sendBtn.style.opacity = '1';
+        }
+    });
+    
+    // Focus input on page load
+    messageInput.focus();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (pollTimeout) {
+            clearTimeout(pollTimeout);
+        }
+    });
 });
 </script>
 {% endblock main-content %}
