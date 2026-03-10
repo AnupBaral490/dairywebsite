@@ -404,6 +404,86 @@
     </div>
 </section>
 
+<!-- Milestones Section -->
+<section class="section about-milestones-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Our Growth Journey</span>
+            <h2 class="section-title-main">Key Milestones</h2>
+            <p class="section-subtitle">A quick look at how Fresh Dairy has grown with farmers and families.</p>
+        </div>
+
+        <div class="milestone-timeline">
+            <div class="milestone-item">
+                <div class="milestone-year">2018</div>
+                <div class="milestone-content">
+                    <h5>Company Established</h5>
+                    <p>Fresh Dairy was founded with a clear mission to deliver safe, nutritious, and affordable dairy products.</p>
+                </div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-year">2020</div>
+                <div class="milestone-content">
+                    <h5>Production Began</h5>
+                    <p>We launched commercial production with strict quality control and temperature-managed logistics.</p>
+                </div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-year">2023</div>
+                <div class="milestone-content">
+                    <h5>Farmer Network Expansion</h5>
+                    <p>Our relationship-farming model expanded significantly, creating better and stable opportunities for local farmers.</p>
+                </div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-year">2026</div>
+                <div class="milestone-content">
+                    <h5>Trusted by Thousands</h5>
+                    <p>Today we serve a growing customer base with a broad portfolio of fresh dairy essentials and value-added products.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Section -->
+<section class="section trust-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">Trust & Standards</span>
+            <h2 class="section-title-main">Quality You Can Count On</h2>
+            <p class="section-subtitle">We follow disciplined processes from sourcing to final delivery.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="trust-card h-100">
+                    <h5>Quality Testing</h5>
+                    <p>Every batch is checked for purity, safety, and freshness before dispatch.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="trust-card h-100">
+                    <h5>Cold Chain Delivery</h5>
+                    <p>Temperature-controlled handling ensures products remain fresh throughout transit.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="trust-card h-100">
+                    <h5>Responsible Sourcing</h5>
+                    <p>We partner with vetted farms and encourage ethical, sustainable farming practices.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="trust-card h-100">
+                    <h5>Customer Support</h5>
+                    <p>Our support team is available to assist with orders, products, and feedback quickly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA Section -->
 <section class="about-cta">
     <div class="cta-pattern-bg"></div>
@@ -433,6 +513,98 @@
         </div>
     </div>
 </section>
+
+<style>
+.about-milestones-section {
+    background: #f8fafc;
+}
+
+.milestone-timeline {
+    max-width: 920px;
+    margin: 0 auto;
+    border-left: 2px solid #dbe2ea;
+    padding-left: 1.25rem;
+}
+
+.milestone-item {
+    position: relative;
+    padding: 0.35rem 0 1.25rem 0;
+}
+
+.milestone-item::before {
+    content: "";
+    position: absolute;
+    left: -1.68rem;
+    top: 0.45rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0d6efd;
+    box-shadow: 0 0 0 4px #e9f1ff;
+}
+
+.milestone-year {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid #d8e2f0;
+    border-radius: 999px;
+    padding: 0.25rem 0.6rem;
+    margin-bottom: 0.45rem;
+}
+
+.milestone-content h5 {
+    margin-bottom: 0.35rem;
+    font-size: 1.02rem;
+    color: #0f172a;
+}
+
+.milestone-content p {
+    margin-bottom: 0;
+    color: #475569;
+}
+
+.trust-section {
+    background: #ffffff;
+}
+
+.trust-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    padding: 1.1rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trust-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.trust-card h5 {
+    margin-bottom: 0.45rem;
+    color: #0f172a;
+}
+
+.trust-card p {
+    margin-bottom: 0;
+    color: #475569;
+    font-size: 0.94rem;
+}
+
+@media (max-width: 767px) {
+    .milestone-timeline {
+        padding-left: 1rem;
+    }
+
+    .milestone-item::before {
+        left: -1.42rem;
+    }
+}
+</style>
 
 <script>
 // Animated counter for statistics
