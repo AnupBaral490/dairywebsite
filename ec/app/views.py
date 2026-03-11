@@ -357,7 +357,8 @@ def payment_done(request):
             quantity=item.quantity,
             payment=payment
         )
-        total_amount += item.quantity * item.product.discounted_price
+        # Use cart total so loyalty points match the discounted amount actually paid.
+        total_amount += item.total_cost
         item.delete()
 
     # Award loyalty points (1 point per rupee)
@@ -395,9 +396,8 @@ def plus_cart(request):
 
         amount = 0
         for item in cart:
-            amount += item.quantity * item.product.discounted_price
+            amount += item.total_cost
 
-        totalamount = amount + 40
         shipping = 40 if amount > 0 else 0
         totalamount = amount + shipping
 
@@ -429,10 +429,7 @@ def minus_cart(request):
 
         cart = Cart.objects.filter(user=request.user)
 
-        amount = sum(
-            item.quantity * (item.variant.discounted_price if item.variant else item.product.discounted_price)
-            for item in cart
-        )
+        amount = sum(item.total_cost for item in cart)
 
         shipping = 40 if amount > 0 else 0
         totalamount = amount + shipping
@@ -453,10 +450,7 @@ def remove_cart(request):
 
         cart = Cart.objects.filter(user=request.user)
 
-        amount = sum(
-            item.quantity * (item.variant.discounted_price if item.variant else item.product.discounted_price)
-            for item in cart
-        )
+        amount = sum(item.total_cost for item in cart)
 
         shipping = 40 if amount > 0 else 0
         totalamount = amount + shipping
